@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymFlow Pro - Trainer & Student Management</title>
-    <!-- Firebase App and Firestore SDKs -->
+    <!-- Firebase App, Firestore, and Storage SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
-        /* ===== CSS UNCHANGED FROM PREVIOUS VERSION (included for completeness) ===== */
+        /* ===== EXACT SAME CSS AS BEFORE (included for completeness) ===== */
         :root {
             --bg: #0d0d14;
             --bg2: #12121e;
@@ -405,6 +406,34 @@
         .notification-item .notif-msg { font-size: 14px; color: var(--text); }
         .notification-item .notif-date { font-size: 12px; color: var(--text3); }
 
+        /* Pending Payments */
+        .pending-list {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .pending-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--bg2);
+            border-radius: var(--radius-xs);
+            margin-bottom: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pending-item .pending-info { flex: 1; }
+        .pending-item .pending-actions { display: flex; gap: 8px; }
+        .pending-item .pending-screenshot {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -533,6 +562,8 @@
             </div>
             <div class="admin-section-title">📋 All Users</div>
             <div id="userListContainerOwner"></div>
+            <div class="admin-section-title">🧹 Cleanup</div>
+            <button class="btn btn-danger btn-sm btn-block" onclick="removeDefaultStudents()">🗑️ Remove Default Students</button>
         </div>
 
         <!-- Head Trainer Controls -->
@@ -631,10 +662,16 @@
             </div>
         </div>
 
-        <!-- Payment Notifications -->
+        <!-- Payment Notifications (visible to both trainer and head trainer) -->
         <div class="notification-list" id="paymentNotifications">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">🔔 Payment Notifications</h3>
             <div id="notificationsContainer"></div>
+        </div>
+
+        <!-- Pending Payments (ONLY for head trainer) -->
+        <div class="pending-list" id="pendingPaymentsSection" style="display: none;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">⏳ Pending Payment Approvals</h3>
+            <div id="pendingPaymentsContainer"></div>
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
@@ -695,7 +732,7 @@
         <!-- Payment Section -->
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">💳 Pay Your Monthly Fee</h3>
-            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Pay securely via InstaPay or Vodafone Cash. After sending, enter the transaction ID below.</p>
+            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Pay via InstaPay or Vodafone Cash. Enter amount, transaction ID, and upload a screenshot.</p>
             <div class="form-group">
                 <label>Payment Method</label>
                 <select id="paymentMethod">
@@ -704,11 +741,19 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Amount (EGP)</label>
+                <input type="number" id="paymentAmount" placeholder="Enter amount" min="1">
+            </div>
+            <div class="form-group">
                 <label>Transaction ID</label>
                 <input type="text" id="transactionId" placeholder="Enter transaction ID">
             </div>
+            <div class="form-group">
+                <label>Screenshot of Transaction</label>
+                <input type="file" id="paymentScreenshot" accept="image/*" required>
+            </div>
             <button class="btn btn-primary" onclick="submitStudentPayment()">✅ Submit Payment</button>
-            <div id="paymentSubmitMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display: none;">Payment submitted! Trainer will be notified.</div>
+            <div id="paymentSubmitMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display: none;">Payment submitted! Waiting for head trainer approval.</div>
         </div>
 
         <!-- Schedule Section -->
@@ -758,6 +803,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
         const DATA_DOC = db.collection('gymflow').doc('data');
 
         // ==================== GLOBAL DATA OBJECT ====================
@@ -768,7 +814,8 @@
                 { password: "Omar_2011", role: "owner" },
                 { password: "head123", role: "head_trainer" },
                 { password: "trainer123", role: "trainer" }
-            ]
+            ],
+            pendingPayments: []
         };
 
         const ADMIN_PASSWORD_OWNER = "Omar_2011";
@@ -789,8 +836,8 @@
                         { password: "head123", role: "head_trainer" },
                         { password: "trainer123", role: "trainer" }
                     ];
+                    if (!data.pendingPayments) data.pendingPayments = [];
                     console.log('Real-time update received');
-                    // Re-render current dashboard if needed
                     if (currentUser) {
                         if (currentUser.role === 'student') {
                             renderStudentDashboard();
@@ -820,6 +867,7 @@
                         { password: "head123", role: "head_trainer" },
                         { password: "trainer123", role: "trainer" }
                     ];
+                    if (!data.pendingPayments) data.pendingPayments = [];
                 } else {
                     data = getDefaultData();
                     await saveDataToFirestore();
@@ -844,32 +892,14 @@
                 users: [
                     { email: 'trainer@gym.com', password: 'trainer123', role: 'trainer', name: 'Coach Omar', availability: null },
                     { email: 'headtrainer@gym.com', password: 'head123', role: 'head_trainer', name: 'Head Coach', availability: null },
-                    { email: 'student@gym.com', password: 'student123', role: 'student', name: 'John Doe' },
-                    { email: 'sara@gym.com', password: 'sara123', role: 'student', name: 'Sara Ali' },
-                    { email: 'ahmed@gym.com', password: 'ahmed123', role: 'student', name: 'Ahmed Hassan' },
                 ],
-                students: {
-                    'student@gym.com': {
-                        name: 'John Doe', monthlyFee: 50, lastPaymentDate: '2025-01-05', nextPaymentDate: '2025-02-05',
-                        attendanceThisMonth: 12, schedule: { day: 'Monday', time: '6:00 AM' },
-                        paymentHistory: [{ date: '2025-01-05', amount: 50, method: 'Cash' }, { date: '2024-12-05', amount: 50, method: 'Cash' }, { date: '2024-11-05', amount: 50, method: 'Cash' }]
-                    },
-                    'sara@gym.com': {
-                        name: 'Sara Ali', monthlyFee: 45, lastPaymentDate: '2025-01-10', nextPaymentDate: '2025-02-10',
-                        attendanceThisMonth: 8, schedule: { day: 'Wednesday', time: '10:00 AM' },
-                        paymentHistory: [{ date: '2025-01-10', amount: 45, method: 'Cash' }, { date: '2024-12-10', amount: 45, method: 'Cash' }]
-                    },
-                    'ahmed@gym.com': {
-                        name: 'Ahmed Hassan', monthlyFee: 60, lastPaymentDate: '2024-12-20', nextPaymentDate: '2025-01-20',
-                        attendanceThisMonth: 15, schedule: { day: 'Tuesday', time: '7:00 PM' },
-                        paymentHistory: [{ date: '2024-12-20', amount: 60, method: 'Cash' }, { date: '2024-11-20', amount: 60, method: 'Cash' }, { date: '2024-10-20', amount: 60, method: 'Cash' }]
-                    },
-                },
+                students: {}, // No default students!
                 adminPasswords: [
                     { password: ADMIN_PASSWORD_OWNER, role: "owner" },
                     { password: "head123", role: "head_trainer" },
                     { password: "trainer123", role: "trainer" }
-                ]
+                ],
+                pendingPayments: []
             };
         }
 
@@ -950,6 +980,7 @@
             return true;
         }
 
+        // Add functions for owner, head trainer, trainer adding (same as before)
         async function addHeadTrainer() {
             const email = document.getElementById('newHeadTrainerEmail').value;
             const password = document.getElementById('newHeadTrainerPassword').value;
@@ -1103,15 +1134,33 @@
             data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
             if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
             await saveDataToFirestore();
-            // Re-render any open admin lists
             if (document.getElementById('ownerControls').style.display === 'block') renderOwnerUserList();
             if (document.getElementById('headTrainerControls').style.display === 'block') renderHeadTrainerUserList();
             if (document.getElementById('trainerControls').style.display === 'block') renderTrainerUserList();
-            // Also re-render trainer dashboard if current user is trainer/head trainer
             if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) {
                 renderTrainerDashboard();
             }
             showToast('User deleted.', 'info');
+        }
+
+        // ==================== REMOVE DEFAULT STUDENTS ====================
+        async function removeDefaultStudents() {
+            const defaultEmails = ['student@gym.com', 'sara@gym.com', 'ahmed@gym.com'];
+            let removed = 0;
+            for (const email of defaultEmails) {
+                if (data.users.find(u => u.email.toLowerCase() === email)) {
+                    data.users = data.users.filter(u => u.email.toLowerCase() !== email);
+                    if (data.students[email]) delete data.students[email];
+                    removed++;
+                }
+            }
+            if (removed > 0) {
+                await saveDataToFirestore();
+                renderOwnerUserList();
+                showToast(`Removed ${removed} default student(s).`, 'success');
+            } else {
+                showToast('No default students found.', 'info');
+            }
         }
 
         // ==================== AUTH & PERSISTENT LOGIN ====================
@@ -1165,6 +1214,12 @@
             document.getElementById('trainerAvatar').textContent = (currentUser.name || 'T').charAt(0).toUpperCase();
             populateTrainerAvailability();
             renderTrainerDashboard();
+            // Show/hide pending payments section based on role
+            if (currentUser.role === 'head_trainer') {
+                document.getElementById('pendingPaymentsSection').style.display = 'block';
+            } else {
+                document.getElementById('pendingPaymentsSection').style.display = 'none';
+            }
         }
 
         function showStudentDashboard() {
@@ -1239,7 +1294,6 @@
             const searchTerm = (document.getElementById('trainerSearch')?.value || '').toLowerCase();
             const filter = document.getElementById('trainerFilter')?.value || 'all';
 
-            // Filter students
             let filtered = students.filter(s => {
                 const nameMatch = (s.name || '').toLowerCase().includes(searchTerm) || s.email.toLowerCase().includes(searchTerm);
                 const status = getPaymentStatus(s);
@@ -1249,7 +1303,6 @@
                 return nameMatch;
             });
 
-            // Stats
             const totalStudents = students.length;
             const paidThisMonth = students.filter(s => {
                 if (!s.lastPaymentDate || s.lastPaymentDate === '—') return false;
@@ -1282,6 +1335,29 @@
                         </div>
                     `;
                 }).join('');
+            }
+
+            // Pending Payments (only if head trainer)
+            const pendingContainer = document.getElementById('pendingPaymentsContainer');
+            if (currentUser.role === 'head_trainer') {
+                if (!data.pendingPayments || data.pendingPayments.length === 0) {
+                    pendingContainer.innerHTML = '<p style="color:var(--text3);font-size:13px;">No pending payments.</p>';
+                } else {
+                    pendingContainer.innerHTML = data.pendingPayments.map((p, index) => `
+                        <div class="pending-item">
+                            <div class="pending-info">
+                                <strong>${p.studentName} (${p.studentEmail})</strong><br>
+                                <span>Method: ${p.method}</span> · <span>Transaction ID: ${p.transactionId}</span> · <span>Amount: EGP ${p.amount}</span><br>
+                                <span>Submitted: ${p.timestamp}</span>
+                                ${p.screenshotUrl ? `<a href="${p.screenshotUrl}" target="_blank">View Screenshot</a>` : ''}
+                            </div>
+                            <div class="pending-actions">
+                                <button class="btn btn-success btn-sm" onclick="approvePayment(${index})">✅ Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectPayment(${index})">❌ Reject</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
             }
 
             // Student cards
@@ -1395,7 +1471,6 @@
                 </div>
             `;
 
-            // Auto-calculate next payment when last payment changes
             document.getElementById('editLastPayment').addEventListener('change', function() {
                 const lastDate = this.value;
                 if (lastDate) {
@@ -1599,34 +1674,111 @@
             setTimeout(() => document.getElementById('scheduleSavedMsg').style.display = 'none', 3000);
         }
 
-        // ==================== STUDENT PAYMENT ====================
+        // ==================== STUDENT PAYMENT SUBMISSION ====================
         async function submitStudentPayment() {
             if (!currentUser) return;
             const student = data.students[currentUser.email.toLowerCase()];
             if (!student) return;
 
             const method = document.getElementById('paymentMethod').value;
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
             const transactionId = document.getElementById('transactionId').value.trim();
+            const screenshotFile = document.getElementById('paymentScreenshot').files[0];
+
+            if (!amount || amount <= 0) {
+                showToast('Please enter a valid amount.', 'warning');
+                return;
+            }
             if (!transactionId) {
                 showToast('Please enter the transaction ID.', 'warning');
                 return;
             }
+            if (!screenshotFile) {
+                showToast('Please upload a screenshot of the transaction.', 'warning');
+                return;
+            }
 
-            const amount = student.monthlyFee || 50;
-            const today = new Date().toISOString().split('T')[0];
-            if (!student.paymentHistory) student.paymentHistory = [];
-            student.paymentHistory.unshift({ date: today, amount: amount, method, transactionId });
-            student.lastPaymentDate = today;
+            // Upload screenshot to Firebase Storage
+            try {
+                const storageRef = storage.ref(`payment_screenshots/${currentUser.email}/${Date.now()}_${screenshotFile.name}`);
+                const uploadTask = await storageRef.put(screenshotFile);
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+
+                // Add to pending payments
+                const pendingPayment = {
+                    studentEmail: currentUser.email,
+                    studentName: student.name,
+                    method,
+                    amount,
+                    transactionId,
+                    screenshotUrl: downloadURL,
+                    timestamp: new Date().toISOString()
+                };
+                data.pendingPayments = data.pendingPayments || [];
+                data.pendingPayments.push(pendingPayment);
+
+                await saveDataToFirestore();
+                document.getElementById('paymentAmount').value = '';
+                document.getElementById('transactionId').value = '';
+                document.getElementById('paymentScreenshot').value = '';
+                document.getElementById('paymentSubmitMsg').style.display = 'block';
+                showToast('Payment submitted! Waiting for head trainer approval.', 'success');
+                setTimeout(() => document.getElementById('paymentSubmitMsg').style.display = 'none', 5000);
+                renderStudentDashboard();
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('Failed to upload screenshot. Please try again.', 'error');
+            }
+        }
+
+        // ==================== HEAD TRAINER APPROVAL ====================
+        async function approvePayment(index) {
+            if (currentUser.role !== 'head_trainer') {
+                showToast('Only head trainer can approve payments.', 'error');
+                return;
+            }
+            const pending = data.pendingPayments[index];
+            if (!pending) return;
+
+            const student = data.students[pending.studentEmail];
+            if (!student) {
+                showToast('Student not found.', 'error');
+                return;
+            }
+
+            // Add to student's payment history
+            student.paymentHistory = student.paymentHistory || [];
+            student.paymentHistory.unshift({
+                date: new Date().toISOString().split('T')[0],
+                amount: pending.amount,
+                method: pending.method,
+                transactionId: pending.transactionId,
+                screenshotUrl: pending.screenshotUrl,
+                approved: true
+            });
+            student.lastPaymentDate = new Date().toISOString().split('T')[0];
             const next = new Date();
             next.setMonth(next.getMonth() + 1);
             student.nextPaymentDate = next.toISOString().split('T')[0];
 
+            // Remove from pending
+            data.pendingPayments.splice(index, 1);
+
             await saveDataToFirestore();
-            document.getElementById('transactionId').value = '';
-            document.getElementById('paymentSubmitMsg').style.display = 'block';
-            showToast('Payment submitted! Your trainer has been notified.', 'success');
-            setTimeout(() => document.getElementById('paymentSubmitMsg').style.display = 'none', 5000);
-            renderStudentDashboard();
+            showToast('Payment approved and recorded.', 'success');
+            renderTrainerDashboard();
+        }
+
+        async function rejectPayment(index) {
+            if (currentUser.role !== 'head_trainer') {
+                showToast('Only head trainer can reject payments.', 'error');
+                return;
+            }
+            if (!confirm('Reject this payment?')) return;
+            data.pendingPayments.splice(index, 1);
+            await saveDataToFirestore();
+            showToast('Payment rejected.', 'info');
+            renderTrainerDashboard();
         }
 
         // ==================== INITIAL LOAD & AUTO-LOGIN ====================
