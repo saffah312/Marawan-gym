@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        /* ===== CSS UNCHANGED FROM PREVIOUS VERSION ===== */
+        /* ===== EXACT SAME CSS AS BEFORE ===== */
         :root {
             --bg: #0d0d14;
             --bg2: #12121e;
@@ -574,25 +574,38 @@
                 </div>
                 <div class="form-group">
                     <label>Start Time</label>
-                    <select id="trainerAvailStart">
-                        <option value="">—</option>
-                        <!-- populated by JS -->
-                    </select>
+                    <select id="trainerAvailStart"></select>
                 </div>
                 <div class="form-group">
                     <label>End Time</label>
-                    <select id="trainerAvailEnd">
-                        <option value="">—</option>
-                        <!-- populated by JS -->
-                    </select>
+                    <select id="trainerAvailEnd"></select>
                 </div>
             </div>
             <button class="btn btn-primary" onclick="saveTrainerAvailability()">💾 Save Availability</button>
             <div id="availabilitySavedMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display:none;">✅ Availability saved!</div>
         </div>
 
-        <div class="stats-grid" id="trainerStats">
-            <!-- Stats will be populated by JS -->
+        <div class="stats-grid">
+            <div class="stat-card accent">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="statTotalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">💵</div>
+                <div class="stat-value" id="statPaidThisMonth">EGP 0</div>
+                <div class="stat-label">Collected This Month</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-value" id="statDueSoon">0</div>
+                <div class="stat-label">Payments Due Soon</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-value" id="statOverdue">0</div>
+                <div class="stat-label">Overdue Payments</div>
+            </div>
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
@@ -627,8 +640,27 @@
             </div>
         </div>
 
-        <div class="stats-grid" id="studentStats">
-            <!-- Stats populated by JS -->
+        <div class="stats-grid">
+            <div class="stat-card accent">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="studentAttendance">0</div>
+                <div class="stat-label">Sessions This Month</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">💵</div>
+                <div class="stat-value" id="studentLastPayment">—</div>
+                <div class="stat-label">Last Payment</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-value" id="studentNextPayment">—</div>
+                <div class="stat-label">Next Payment Due</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="studentAmount">EGP 0</div>
+                <div class="stat-label">Monthly Fee</div>
+            </div>
         </div>
 
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
@@ -689,8 +721,7 @@
             ]
         };
 
-        const ADMIN_PASSWORD_OWNER = "Omar_2011"; // static fallback
-
+        const ADMIN_PASSWORD_OWNER = "Omar_2011";
         const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const TIME_SLOTS = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
             '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
@@ -728,7 +759,6 @@
             }
         }
 
-        // ==================== DEFAULT DATA ====================
         function getDefaultData() {
             return {
                 users: [
@@ -813,7 +843,7 @@
             }
         }
 
-        // ==================== ADMIN: ADD USERS (ROLE-SPECIFIC) ====================
+        // ==================== ADMIN: ADD USERS ====================
         async function addUser(email, password, role, name) {
             if (!email || !password) {
                 showToast('Please enter both email and password.', 'warning');
@@ -912,7 +942,7 @@
             }
         }
 
-        // ==================== ADMIN PASSWORD MANAGEMENT (Owner only) ====================
+        // ==================== ADMIN PASSWORD MANAGEMENT ====================
         function renderAdminPasswordsList() {
             const container = document.getElementById('adminPasswordsList');
             container.innerHTML = data.adminPasswords.map(p => `
@@ -993,14 +1023,13 @@
             data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
             if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
             await saveDataToFirestore();
-            // Re-render visible list
             if (document.getElementById('ownerControls').style.display === 'block') renderOwnerUserList();
             if (document.getElementById('headTrainerControls').style.display === 'block') renderHeadTrainerUserList();
             if (document.getElementById('trainerControls').style.display === 'block') renderTrainerUserList();
             showToast('User deleted.', 'info');
         }
 
-        // ==================== AUTH ====================
+        // ==================== AUTH & PERSISTENT LOGIN ====================
         let currentUser = null;
 
         function handleLogin(e) {
@@ -1015,6 +1044,7 @@
 
             if (user) {
                 currentUser = user;
+                localStorage.setItem('gymflowCurrentUser', JSON.stringify({ email: user.email, role: user.role }));
                 document.getElementById('loginError').classList.remove('show');
                 showToast(`Welcome back, ${user.name || user.email}!`, 'success');
                 if (user.role === 'student') {
@@ -1032,6 +1062,7 @@
 
         function logout() {
             currentUser = null;
+            localStorage.removeItem('gymflowCurrentUser');
             showLoginPage();
             showToast('Logged out successfully.', 'info');
         }
@@ -1080,14 +1111,12 @@
                 showToast('Please select day, start, and end time.', 'warning');
                 return;
             }
-            // Validate start < end
             const startIdx = TIME_SLOTS.indexOf(start);
             const endIdx = TIME_SLOTS.indexOf(end);
             if (startIdx >= endIdx) {
                 showToast('End time must be after start time.', 'error');
                 return;
             }
-            // Update current user object in data
             const user = data.users.find(u => u.email === currentUser.email);
             if (user) {
                 user.availability = { day, start, end };
@@ -1372,7 +1401,7 @@
                 return `<div class="schedule-day ${selected} ${disabled}" onclick="${hasAvailability ? `selectStudentDay('${day}')` : ''}">${day}</div>`;
             }).join('');
 
-            // Time picker (initially empty, will be filled when day selected)
+            // Time picker
             const timePicker = document.getElementById('studentTimePicker');
             timePicker.innerHTML = '';
             if (student.schedule?.day) {
@@ -1462,7 +1491,7 @@
             setTimeout(() => document.getElementById('scheduleSavedMsg').style.display = 'none', 3000);
         }
 
-        // ==================== INITIAL LOAD ====================
+        // ==================== INITIAL LOAD & AUTO-LOGIN ====================
         window.addEventListener('DOMContentLoaded', async () => {
             const loginCard = document.querySelector('.login-card');
             const loadingDiv = document.createElement('div');
@@ -1477,6 +1506,26 @@
 
             const loadEl = document.getElementById('loadingIndicator');
             if (loadEl) loadEl.remove();
+
+            // Persistent login check
+            const savedUser = localStorage.getItem('gymflowCurrentUser');
+            if (savedUser) {
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    const user = data.users.find(u => u.email === parsed.email && u.role === parsed.role);
+                    if (user) {
+                        currentUser = user;
+                        if (user.role === 'student') {
+                            showStudentDashboard();
+                        } else {
+                            showTrainerDashboard();
+                        }
+                        showToast(`Welcome back, ${user.name || user.email}!`, 'success');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('gymflowCurrentUser');
+                }
+            }
 
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
