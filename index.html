@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        /* ===== EXACT SAME CSS AS BEFORE ===== */
+        /* ===== CSS UNCHANGED FROM PREVIOUS VERSION (included for completeness) ===== */
         :root {
             --bg: #0d0d14;
             --bg2: #12121e;
@@ -382,6 +382,29 @@
         .payment-history .pay-date { color: var(--text2); }
         .payment-history .pay-amount { font-weight: 700; color: var(--green); }
 
+        /* Notification List */
+        .notification-list {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: var(--bg2);
+            border-radius: var(--radius-xs);
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .notification-item:hover { background: var(--card2); }
+        .notification-item .notif-msg { font-size: 14px; color: var(--text); }
+        .notification-item .notif-date { font-size: 12px; color: var(--text3); }
+
         /* Responsive */
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -608,6 +631,12 @@
             </div>
         </div>
 
+        <!-- Payment Notifications -->
+        <div class="notification-list" id="paymentNotifications">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">🔔 Payment Notifications</h3>
+            <div id="notificationsContainer"></div>
+        </div>
+
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
             <input type="text" id="trainerSearch" placeholder="🔍 Search students by name or email..." style="flex: 1; min-width: 200px; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; outline: none;">
             <select id="trainerFilter" style="padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; outline: none; cursor: pointer;">
@@ -663,6 +692,26 @@
             </div>
         </div>
 
+        <!-- Payment Section -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">💳 Pay Your Monthly Fee</h3>
+            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Pay securely via InstaPay or Vodafone Cash. After sending, enter the transaction ID below.</p>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="paymentMethod">
+                    <option value="InstaPay">InstaPay</option>
+                    <option value="Vodafone Cash">Vodafone Cash</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Transaction ID</label>
+                <input type="text" id="transactionId" placeholder="Enter transaction ID">
+            </div>
+            <button class="btn btn-primary" onclick="submitStudentPayment()">✅ Submit Payment</button>
+            <div id="paymentSubmitMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display: none;">Payment submitted! Trainer will be notified.</div>
+        </div>
+
+        <!-- Schedule Section -->
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">📅 Choose Your Training Schedule</h3>
             <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Select the day and time you plan to attend. Only times when a trainer is available are shown.</p>
@@ -675,6 +724,7 @@
             <div id="scheduleSavedMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display: none;">✅ Schedule saved successfully!</div>
         </div>
 
+        <!-- Payment Info -->
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--accent);">💳 Payment Information</h3>
             <div id="studentPaymentInfo"></div>
@@ -750,7 +800,6 @@
                         }
                     }
                 } else {
-                    // Document doesn't exist; create default
                     data = getDefaultData();
                     saveDataToFirestore();
                 }
@@ -803,17 +852,17 @@
                     'student@gym.com': {
                         name: 'John Doe', monthlyFee: 50, lastPaymentDate: '2025-01-05', nextPaymentDate: '2025-02-05',
                         attendanceThisMonth: 12, schedule: { day: 'Monday', time: '6:00 AM' },
-                        paymentHistory: [{ date: '2025-01-05', amount: 50 }, { date: '2024-12-05', amount: 50 }, { date: '2024-11-05', amount: 50 }]
+                        paymentHistory: [{ date: '2025-01-05', amount: 50, method: 'Cash' }, { date: '2024-12-05', amount: 50, method: 'Cash' }, { date: '2024-11-05', amount: 50, method: 'Cash' }]
                     },
                     'sara@gym.com': {
                         name: 'Sara Ali', monthlyFee: 45, lastPaymentDate: '2025-01-10', nextPaymentDate: '2025-02-10',
                         attendanceThisMonth: 8, schedule: { day: 'Wednesday', time: '10:00 AM' },
-                        paymentHistory: [{ date: '2025-01-10', amount: 45 }, { date: '2024-12-10', amount: 45 }]
+                        paymentHistory: [{ date: '2025-01-10', amount: 45, method: 'Cash' }, { date: '2024-12-10', amount: 45, method: 'Cash' }]
                     },
                     'ahmed@gym.com': {
                         name: 'Ahmed Hassan', monthlyFee: 60, lastPaymentDate: '2024-12-20', nextPaymentDate: '2025-01-20',
                         attendanceThisMonth: 15, schedule: { day: 'Tuesday', time: '7:00 PM' },
-                        paymentHistory: [{ date: '2024-12-20', amount: 60 }, { date: '2024-11-20', amount: 60 }, { date: '2024-10-20', amount: 60 }]
+                        paymentHistory: [{ date: '2024-12-20', amount: 60, method: 'Cash' }, { date: '2024-11-20', amount: 60, method: 'Cash' }, { date: '2024-10-20', amount: 60, method: 'Cash' }]
                     },
                 },
                 adminPasswords: [
@@ -1054,9 +1103,14 @@
             data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
             if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
             await saveDataToFirestore();
+            // Re-render any open admin lists
             if (document.getElementById('ownerControls').style.display === 'block') renderOwnerUserList();
             if (document.getElementById('headTrainerControls').style.display === 'block') renderHeadTrainerUserList();
             if (document.getElementById('trainerControls').style.display === 'block') renderTrainerUserList();
+            // Also re-render trainer dashboard if current user is trainer/head trainer
+            if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) {
+                renderTrainerDashboard();
+            }
             showToast('User deleted.', 'info');
         }
 
@@ -1185,6 +1239,7 @@
             const searchTerm = (document.getElementById('trainerSearch')?.value || '').toLowerCase();
             const filter = document.getElementById('trainerFilter')?.value || 'all';
 
+            // Filter students
             let filtered = students.filter(s => {
                 const nameMatch = (s.name || '').toLowerCase().includes(searchTerm) || s.email.toLowerCase().includes(searchTerm);
                 const status = getPaymentStatus(s);
@@ -1194,6 +1249,7 @@
                 return nameMatch;
             });
 
+            // Stats
             const totalStudents = students.length;
             const paidThisMonth = students.filter(s => {
                 if (!s.lastPaymentDate || s.lastPaymentDate === '—') return false;
@@ -1209,6 +1265,26 @@
             document.getElementById('statDueSoon').textContent = dueSoon;
             document.getElementById('statOverdue').textContent = overdue;
 
+            // Payment Notifications
+            const notifContainer = document.getElementById('notificationsContainer');
+            const notifStudents = students.filter(s => getPaymentStatus(s) === 'overdue' || getPaymentStatus(s) === 'due');
+            if (!notifStudents.length) {
+                notifContainer.innerHTML = '<p style="color:var(--text3);font-size:13px;">No payment notifications.</p>';
+            } else {
+                notifContainer.innerHTML = notifStudents.map(s => {
+                    const status = getPaymentStatus(s);
+                    const statusLabel = status === 'overdue' ? 'Overdue' : 'Due Soon';
+                    const color = status === 'overdue' ? 'var(--red)' : 'var(--yellow)';
+                    return `
+                        <div class="notification-item" onclick="openEditModal('${s.email}')">
+                            <span class="notif-msg">${s.name} (${s.email}) — <span style="color:${color};">${statusLabel}</span></span>
+                            <span class="notif-date">Due: ${s.nextPaymentDate || '—'}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Student cards
             const container = document.getElementById('trainerStudentList');
             if (!filtered.length) {
                 container.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span>No students found.</div>';
@@ -1313,7 +1389,7 @@
                     <h4 style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px;">📜 Payment History</h4>
                     <div class="payment-history" style="max-height:150px;">
                         ${(student.paymentHistory || []).length ? student.paymentHistory.map(p => 
-                            `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span><button class="btn btn-xs btn-danger" onclick="removePaymentRecord('${p.date}','${p.amount}')">🗑️</button></div>`
+                            `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span><span style="font-size:11px;color:var(--text3)">${p.method || 'Cash'}</span><button class="btn btn-xs btn-danger" onclick="removePaymentRecord('${p.date}','${p.amount}')">🗑️</button></div>`
                         ).join('') : '<p style="color:var(--text3);font-size:12px;">No payment records.</p>'}
                     </div>
                 </div>
@@ -1369,7 +1445,7 @@
             const amount = student.monthlyFee || 50;
             const today = new Date().toISOString().split('T')[0];
             if (!student.paymentHistory) student.paymentHistory = [];
-            student.paymentHistory.unshift({ date: today, amount: amount });
+            student.paymentHistory.unshift({ date: today, amount: amount, method: 'Cash' });
             student.lastPaymentDate = today;
             const next = new Date();
             next.setMonth(next.getMonth() + 1);
@@ -1475,11 +1551,12 @@
                 historyContainer.innerHTML = '<p style="color:var(--text3);font-size:13px;">No payment records yet.</p>';
             } else {
                 historyContainer.innerHTML = student.paymentHistory.map(p =>
-                    `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span></div>`
+                    `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span><span style="font-size:11px;color:var(--text3)">${p.method || 'Cash'}</span></div>`
                 ).join('');
             }
 
             document.getElementById('scheduleSavedMsg').style.display = 'none';
+            document.getElementById('paymentSubmitMsg').style.display = 'none';
         }
 
         let selectedStudentDay = null;
@@ -1520,6 +1597,36 @@
             document.getElementById('scheduleSavedMsg').style.display = 'block';
             showToast('Schedule saved! Your trainer can now see it.', 'success');
             setTimeout(() => document.getElementById('scheduleSavedMsg').style.display = 'none', 3000);
+        }
+
+        // ==================== STUDENT PAYMENT ====================
+        async function submitStudentPayment() {
+            if (!currentUser) return;
+            const student = data.students[currentUser.email.toLowerCase()];
+            if (!student) return;
+
+            const method = document.getElementById('paymentMethod').value;
+            const transactionId = document.getElementById('transactionId').value.trim();
+            if (!transactionId) {
+                showToast('Please enter the transaction ID.', 'warning');
+                return;
+            }
+
+            const amount = student.monthlyFee || 50;
+            const today = new Date().toISOString().split('T')[0];
+            if (!student.paymentHistory) student.paymentHistory = [];
+            student.paymentHistory.unshift({ date: today, amount: amount, method, transactionId });
+            student.lastPaymentDate = today;
+            const next = new Date();
+            next.setMonth(next.getMonth() + 1);
+            student.nextPaymentDate = next.toISOString().split('T')[0];
+
+            await saveDataToFirestore();
+            document.getElementById('transactionId').value = '';
+            document.getElementById('paymentSubmitMsg').style.display = 'block';
+            showToast('Payment submitted! Your trainer has been notified.', 'success');
+            setTimeout(() => document.getElementById('paymentSubmitMsg').style.display = 'none', 5000);
+            renderStudentDashboard();
         }
 
         // ==================== INITIAL LOAD & AUTO-LOGIN ====================
