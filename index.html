@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        /* ==== ENTIRE CSS FROM PREVIOUS VERSION ==== */
+        /* ===== CSS UNCHANGED FROM PREVIOUS VERSION ===== */
         :root {
             --bg: #0d0d14;
             --bg2: #12121e;
@@ -40,11 +40,7 @@
             --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font);
@@ -209,11 +205,7 @@
             justify-content: center;
             gap: 8px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff;
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 4px 16px var(--accent-glow); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
         .btn-primary:active { transform: translateY(0); }
         .btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
@@ -231,165 +223,76 @@
 
         /* Admin Panel Bottom Sheet */
         .admin-fixed-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9000;
-            background: var(--card);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 12px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            font-family: var(--font);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            position: fixed; bottom: 20px; right: 20px; z-index: 9000;
+            background: var(--card); border: 1px solid var(--accent); color: var(--accent);
+            padding: 12px 20px; border-radius: 50px; cursor: pointer; font-weight: 700;
+            font-size: 14px; letter-spacing: 0.5px; box-shadow: var(--shadow); transition: var(--transition);
+            font-family: var(--font); display: flex; align-items: center; gap: 8px;
         }
         .admin-fixed-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.5); }
         .admin-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 9500;
-            animation: fadeInPage 0.2s ease;
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 9500; animation: fadeInPage 0.2s ease;
         }
         .admin-overlay.show { display: block; }
         .admin-sheet {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 9600;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-top: 3px solid var(--accent);
-            border-radius: var(--radius) var(--radius) 0 0;
-            padding: 30px 25px;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 80vh;
-            overflow-y: auto;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9600;
+            background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--accent);
+            border-radius: var(--radius) var(--radius) 0 0; padding: 30px 25px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5); transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); max-height: 80vh; overflow-y: auto;
         }
         .admin-sheet.show { transform: translateY(0); }
         .admin-sheet h3 { color: var(--accent); font-size: 20px; margin-bottom: 4px; }
         .admin-sheet .admin-sub { color: var(--text3); font-size: 13px; margin-bottom: 20px; }
         .admin-sheet .close-admin {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: var(--text3);
-            font-size: 28px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font);
+            position: absolute; top: 16px; right: 16px; background: none; border: none;
+            color: var(--text3); font-size: 28px; cursor: pointer; transition: var(--transition); font-family: var(--font);
         }
         .admin-sheet .close-admin:hover { color: var(--red); }
         .admin-section-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text2);
-            margin: 16px 0 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 14px; font-weight: 700; color: var(--text2); margin: 16px 0 8px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .user-list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: var(--bg2);
-            border-radius: var(--radius-xs);
-            margin-bottom: 6px;
-            font-size: 13px;
-            gap: 10px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; justify-content: space-between; padding: 10px 14px;
+            background: var(--bg2); border-radius: var(--radius-xs); margin-bottom: 6px; font-size: 13px; gap: 10px; flex-wrap: wrap;
         }
         .user-list-item .email { font-weight: 600; color: var(--text); word-break: break-all; }
         .user-list-item .role-badge {
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .role-trainer { background: var(--purple-glow); color: var(--purple); border: 1px solid var(--purple); }
         .role-student { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue); }
+        .role-head-trainer { background: #ffd70033; color: #ffd700; border: 1px solid #ffd700; }
 
         /* Dashboard Layout */
         .dashboard-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex; align-items: center; justify-content: space-between; padding: 16px 0;
+            margin-bottom: 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
         }
         .dashboard-header .dash-logo {
-            font-size: 22px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 22px; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .dashboard-header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text2); }
         .dashboard-header .user-info .avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #fff;
-            font-size: 16px;
+            width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 16px;
         }
         .btn-logout {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text2);
-            padding: 8px 16px;
-            border-radius: var(--radius-xs);
-            cursor: pointer;
-            font-size: 13px;
-            transition: var(--transition);
-            font-family: var(--font);
+            background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 16px;
+            border-radius: var(--radius-xs); cursor: pointer; font-size: 13px; transition: var(--transition); font-family: var(--font);
         }
         .btn-logout:hover { border-color: var(--red); color: var(--red); }
 
         /* Stats Cards */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px;
         }
         .stat-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 20px;
-            text-align: center;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 20px; text-align: center; transition: var(--transition); position: relative; overflow: hidden;
         }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
         .stat-card .stat-icon { font-size: 28px; margin-bottom: 8px; }
@@ -403,30 +306,18 @@
 
         /* Student Cards Grid */
         .students-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 18px;
-            margin-top: 16px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; margin-top: 16px;
         }
         .student-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 20px;
-            transition: var(--transition);
-            cursor: pointer;
-            position: relative;
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 20px; transition: var(--transition); cursor: pointer; position: relative;
         }
         .student-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); }
         .student-card .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
         .student-card .student-name { font-size: 16px; font-weight: 700; color: var(--text); }
         .student-card .payment-status {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 4px 10px;
-            border-radius: 20px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 4px 10px; border-radius: 20px;
         }
         .status-paid { background: var(--green-glow); color: var(--green); border: 1px solid var(--green); }
         .status-overdue { background: var(--red-glow); color: var(--red); border: 1px solid var(--red); }
@@ -435,49 +326,26 @@
         .student-card .card-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: var(--text2); }
         .student-card .card-info div { background: var(--bg2); padding: 10px 12px; border-radius: var(--radius-xs); }
         .student-card .card-info .label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text3);
-            display: block;
-            margin-bottom: 2px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3);
+            display: block; margin-bottom: 2px;
         }
         .student-card .card-info .value { font-weight: 600; color: var(--text); }
 
         /* Modal */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 5000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeInPage 0.2s ease;
+            display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.7);
+            z-index: 5000; align-items: center; justify-content: center; animation: fadeInPage 0.2s ease;
         }
         .modal-overlay.show { display: flex; }
         .modal {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 30px;
-            max-width: 550px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow);
-            animation: fadeInPage 0.3s ease;
-            position: relative;
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 30px; max-width: 550px; width: 90%; max-height: 85vh; overflow-y: auto;
+            box-shadow: var(--shadow); animation: fadeInPage 0.3s ease; position: relative;
         }
         .modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
         .modal .close-btn {
-            position: absolute;
-            top: 16px; right: 16px;
-            background: none; border: none;
-            color: var(--text3);
-            font-size: 24px; cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font);
+            position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text3);
+            font-size: 24px; cursor: pointer; transition: var(--transition); font-family: var(--font);
         }
         .modal .close-btn:hover { color: var(--red); }
         .modal .form-group { margin-bottom: 14px; }
@@ -486,49 +354,30 @@
 
         /* Schedule Section */
         .schedule-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px;
         }
         .schedule-day {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xs);
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 13px;
-            font-weight: 600;
+            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-xs);
+            padding: 12px; text-align: center; cursor: pointer; transition: var(--transition);
+            font-size: 13px; font-weight: 600;
         }
         .schedule-day:hover { border-color: var(--accent); color: var(--accent); }
         .schedule-day.selected { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+        .schedule-day.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .time-slots { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .time-slot {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xs);
-            padding: 8px 14px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
+            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-xs);
+            padding: 8px 14px; font-size: 12px; cursor: pointer; transition: var(--transition); font-weight: 500;
         }
         .time-slot:hover { border-color: var(--accent); color: var(--accent); }
         .time-slot.selected { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
         /* Payment History */
         .payment-history { margin-top: 14px; max-height: 200px; overflow-y: auto; }
         .payment-history .pay-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: var(--bg2);
-            border-radius: var(--radius-xs);
-            margin-bottom: 4px;
-            font-size: 13px;
-            align-items: center;
+            display: flex; justify-content: space-between; padding: 8px 12px; background: var(--bg2);
+            border-radius: var(--radius-xs); margin-bottom: 4px; font-size: 13px; align-items: center;
         }
         .payment-history .pay-date { color: var(--text2); }
         .payment-history .pay-amount { font-weight: 700; color: var(--green); }
@@ -554,27 +403,16 @@
         .empty-state .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
 
         .week-schedule {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 12px;
         }
         .week-day-col {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xs);
-            padding: 12px;
-            min-height: 80px;
+            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-xs);
+            padding: 12px; min-height: 80px;
         }
         .week-day-col h4 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-align: center; }
         .week-day-col .schedule-entry {
-            font-size: 11px;
-            padding: 4px 8px;
-            background: var(--card);
-            border-radius: 4px;
-            margin-bottom: 4px;
-            color: var(--text2);
-            text-align: center;
+            font-size: 11px; padding: 4px 8px; background: var(--card); border-radius: 4px;
+            margin-bottom: 4px; color: var(--text2); text-align: center;
         }
     </style>
 </head>
@@ -609,6 +447,7 @@
                         <select id="loginRole">
                             <option value="student">Student</option>
                             <option value="trainer">Trainer</option>
+                            <option value="head_trainer">Head Trainer</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block" style="margin-top: 8px;">
@@ -626,7 +465,7 @@
     <div class="admin-sheet" id="adminSheet">
         <button class="close-admin" onclick="closeAdminSheet()">✕</button>
         <h3>🔐 Admin Access</h3>
-        <p class="admin-sub">Manage user accounts below.</p>
+        <p class="admin-sub">Enter your admin password</p>
         <div id="adminPasswordSection">
             <div class="form-group">
                 <label>Admin Password</label>
@@ -634,30 +473,78 @@
             </div>
             <button class="btn btn-secondary btn-sm" onclick="verifyAdminPassword()">🔑 Unlock Panel</button>
         </div>
-        <div id="adminControls" style="display: none;">
-            <div class="admin-section-title">➕ Add New User</div>
+
+        <!-- Owner Controls -->
+        <div id="ownerControls" style="display:none;">
+            <div class="admin-section-title">👑 Owner Panel</div>
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="newUserEmail" placeholder="user@example.com">
+                <label>Add Head Trainer</label>
+                <input type="email" id="newHeadTrainerEmail" placeholder="headtrainer@example.com">
+                <input type="text" id="newHeadTrainerPassword" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newHeadTrainerName" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addHeadTrainer()">➕ Add Head Trainer</button>
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="text" id="newUserPassword" placeholder="Set a password">
+                <label>Add Trainer</label>
+                <input type="email" id="newTrainerEmailOwner" placeholder="trainer@example.com">
+                <input type="text" id="newTrainerPasswordOwner" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newTrainerNameOwner" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addTrainerFromOwner()">➕ Add Trainer</button>
             </div>
             <div class="form-group">
-                <label>Role</label>
-                <select id="newUserRole">
-                    <option value="student">Student</option>
+                <label>Add Student</label>
+                <input type="email" id="newStudentEmailOwner" placeholder="student@example.com">
+                <input type="text" id="newStudentPasswordOwner" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newStudentNameOwner" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addStudentFromOwner()">➕ Add Student</button>
+            </div>
+            <div class="admin-section-title">🔑 Manage Admin Passwords</div>
+            <div id="adminPasswordsList"></div>
+            <div class="form-group">
+                <input type="text" id="newAdminPassword" placeholder="New admin password">
+                <select id="newAdminPasswordRole">
+                    <option value="head_trainer">Head Trainer</option>
                     <option value="trainer">Trainer</option>
                 </select>
+                <button class="btn btn-primary btn-sm btn-block" onclick="addAdminPassword()">➕ Add Password</button>
+            </div>
+            <div class="admin-section-title">📋 All Users</div>
+            <div id="userListContainerOwner"></div>
+        </div>
+
+        <!-- Head Trainer Controls -->
+        <div id="headTrainerControls" style="display:none;">
+            <div class="admin-section-title">👑 Head Trainer Panel</div>
+            <div class="form-group">
+                <label>Add Trainer</label>
+                <input type="email" id="newTrainerEmail" placeholder="trainer@example.com">
+                <input type="text" id="newTrainerPassword" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newTrainerName" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addTrainerFromHead()">➕ Add Trainer</button>
             </div>
             <div class="form-group">
-                <label>Full Name (optional)</label>
-                <input type="text" id="newUserName" placeholder="Enter full name">
+                <label>Add Student</label>
+                <input type="email" id="newStudentEmail" placeholder="student@example.com">
+                <input type="text" id="newStudentPassword" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newStudentName" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addStudentFromHead()">➕ Add Student</button>
             </div>
-            <button class="btn btn-success btn-sm btn-block" onclick="addUser()">➕ Add User</button>
-            <div class="admin-section-title" style="margin-top: 20px;">📋 Existing Users</div>
-            <div id="userListContainer" style="margin-top: 8px;"></div>
+            <div class="admin-section-title">📋 All Users</div>
+            <div id="userListContainerHead"></div>
+        </div>
+
+        <!-- Trainer Controls -->
+        <div id="trainerControls" style="display:none;">
+            <div class="admin-section-title">🧑‍🏫 Trainer Panel</div>
+            <div class="form-group">
+                <label>Add Student</label>
+                <input type="email" id="newStudentEmailTrainer" placeholder="student@example.com">
+                <input type="text" id="newStudentPasswordTrainer" placeholder="Password" style="margin-top:8px;">
+                <input type="text" id="newStudentNameTrainer" placeholder="Full Name" style="margin-top:8px;">
+                <button class="btn btn-success btn-sm btn-block" onclick="addStudentFromTrainer()">➕ Add Student</button>
+            </div>
+            <div class="admin-section-title">📋 Students</div>
+            <div id="userListContainerTrainer"></div>
         </div>
     </div>
 
@@ -672,27 +559,40 @@
             </div>
         </div>
 
+        <!-- Trainer Availability -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">📅 My Availability</h3>
+            <p style="color: var(--text3); font-size: 13px; margin-bottom: 10px;">Set the day and time range you are at the gym.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Day</label>
+                    <select id="trainerAvailDay">
+                        <option value="">— Select Day —</option>
+                        <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+                        <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <select id="trainerAvailStart">
+                        <option value="">—</option>
+                        <!-- populated by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <select id="trainerAvailEnd">
+                        <option value="">—</option>
+                        <!-- populated by JS -->
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveTrainerAvailability()">💾 Save Availability</button>
+            <div id="availabilitySavedMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display:none;">✅ Availability saved!</div>
+        </div>
+
         <div class="stats-grid" id="trainerStats">
-            <div class="stat-card accent">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="statTotalStudents">0</div>
-                <div class="stat-label">Total Students</div>
-            </div>
-            <div class="stat-card green">
-                <div class="stat-icon">💵</div>
-                <div class="stat-value" id="statPaidThisMonth">EGP 0</div>
-                <div class="stat-label">Collected This Month</div>
-            </div>
-            <div class="stat-card yellow">
-                <div class="stat-icon">⏰</div>
-                <div class="stat-value" id="statDueSoon">0</div>
-                <div class="stat-label">Payments Due Soon</div>
-            </div>
-            <div class="stat-card red">
-                <div class="stat-icon">🚨</div>
-                <div class="stat-value" id="statOverdue">0</div>
-                <div class="stat-label">Overdue Payments</div>
-            </div>
+            <!-- Stats will be populated by JS -->
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
@@ -728,31 +628,12 @@
         </div>
 
         <div class="stats-grid" id="studentStats">
-            <div class="stat-card accent">
-                <div class="stat-icon">📅</div>
-                <div class="stat-value" id="studentAttendance">0</div>
-                <div class="stat-label">Sessions This Month</div>
-            </div>
-            <div class="stat-card green">
-                <div class="stat-icon">💵</div>
-                <div class="stat-value" id="studentLastPayment">—</div>
-                <div class="stat-label">Last Payment</div>
-            </div>
-            <div class="stat-card yellow">
-                <div class="stat-icon">🔔</div>
-                <div class="stat-value" id="studentNextPayment">—</div>
-                <div class="stat-label">Next Payment Due</div>
-            </div>
-            <div class="stat-card blue">
-                <div class="stat-icon">💰</div>
-                <div class="stat-value" id="studentAmount">EGP 0</div>
-                <div class="stat-label">Monthly Fee</div>
-            </div>
+            <!-- Stats populated by JS -->
         </div>
 
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">📅 Choose Your Training Schedule</h3>
-            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Select the day and time you plan to attend. Your trainer will see this schedule.</p>
+            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Select the day and time you plan to attend. Only times when a trainer is available are shown.</p>
             <div class="schedule-grid" id="studentDayPicker"></div>
             <div style="margin-top: 12px;">
                 <label style="font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px;">Time Slot</label>
@@ -782,7 +663,7 @@
     </div>
 
     <script>
-        // ==================== FIREBASE CONFIG (YOUR KEYS) ====================
+        // ==================== FIREBASE CONFIG ====================
         const firebaseConfig = {
             apiKey: "AIzaSyD8YaDf5Id6sFZp8GgSKpEy_GKME4EWjH0",
             authDomain: "marawan-gym.firebaseapp.com",
@@ -793,7 +674,6 @@
             measurementId: "G-Z46CTYX2W4"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const DATA_DOC = db.collection('gymflow').doc('data');
@@ -801,8 +681,20 @@
         // ==================== GLOBAL DATA OBJECT ====================
         let data = {
             users: [],
-            students: {}
+            students: {},
+            adminPasswords: [
+                { password: "Omar_2011", role: "owner" },
+                { password: "head123", role: "head_trainer" },
+                { password: "trainer123", role: "trainer" }
+            ]
         };
+
+        const ADMIN_PASSWORD_OWNER = "Omar_2011"; // static fallback
+
+        const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const TIME_SLOTS = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
+            '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
+        ];
 
         // ==================== LOAD DATA FROM FIRESTORE ====================
         async function loadDataFromFirestore() {
@@ -812,84 +704,62 @@
                     data = doc.data();
                     if (!data.users) data.users = [];
                     if (!data.students) data.students = {};
-                    console.log('Data loaded from Firestore');
+                    if (!data.adminPasswords) data.adminPasswords = [
+                        { password: ADMIN_PASSWORD_OWNER, role: "owner" },
+                        { password: "head123", role: "head_trainer" },
+                        { password: "trainer123", role: "trainer" }
+                    ];
                 } else {
                     data = getDefaultData();
                     await saveDataToFirestore();
-                    console.log('No existing data, initialized with defaults');
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                showToast('Failed to load data. Check console.', 'error');
+                showToast('Failed to load data.', 'error');
             }
         }
 
-        // ==================== SAVE DATA TO FIRESTORE ====================
         async function saveDataToFirestore() {
             try {
                 await DATA_DOC.set(data, { merge: true });
-                console.log('Data saved to Firestore');
             } catch (error) {
                 console.error('Error saving data:', error);
                 showToast('Failed to save data.', 'error');
             }
         }
 
-        // ==================== DEFAULT DATA (fallback) ====================
-        const ADMIN_PASSWORD = 'Omar_2011';
-        const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const TIME_SLOTS = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
-            '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
-        ];
-
+        // ==================== DEFAULT DATA ====================
         function getDefaultData() {
             return {
                 users: [
-                    { email: 'trainer@gym.com', password: 'trainer123', role: 'trainer', name: 'Coach Omar' },
+                    { email: 'trainer@gym.com', password: 'trainer123', role: 'trainer', name: 'Coach Omar', availability: null },
+                    { email: 'headtrainer@gym.com', password: 'head123', role: 'head_trainer', name: 'Head Coach', availability: null },
                     { email: 'student@gym.com', password: 'student123', role: 'student', name: 'John Doe' },
                     { email: 'sara@gym.com', password: 'sara123', role: 'student', name: 'Sara Ali' },
                     { email: 'ahmed@gym.com', password: 'ahmed123', role: 'student', name: 'Ahmed Hassan' },
                 ],
                 students: {
                     'student@gym.com': {
-                        name: 'John Doe',
-                        monthlyFee: 50,
-                        lastPaymentDate: '2025-01-05',
-                        nextPaymentDate: '2025-02-05',
-                        attendanceThisMonth: 12,
-                        schedule: { day: 'Monday', time: '6:00 AM' },
-                        paymentHistory: [
-                            { date: '2025-01-05', amount: 50 },
-                            { date: '2024-12-05', amount: 50 },
-                            { date: '2024-11-05', amount: 50 },
-                        ]
+                        name: 'John Doe', monthlyFee: 50, lastPaymentDate: '2025-01-05', nextPaymentDate: '2025-02-05',
+                        attendanceThisMonth: 12, schedule: { day: 'Monday', time: '6:00 AM' },
+                        paymentHistory: [{ date: '2025-01-05', amount: 50 }, { date: '2024-12-05', amount: 50 }, { date: '2024-11-05', amount: 50 }]
                     },
                     'sara@gym.com': {
-                        name: 'Sara Ali',
-                        monthlyFee: 45,
-                        lastPaymentDate: '2025-01-10',
-                        nextPaymentDate: '2025-02-10',
-                        attendanceThisMonth: 8,
-                        schedule: { day: 'Wednesday', time: '10:00 AM' },
-                        paymentHistory: [
-                            { date: '2025-01-10', amount: 45 },
-                            { date: '2024-12-10', amount: 45 },
-                        ]
+                        name: 'Sara Ali', monthlyFee: 45, lastPaymentDate: '2025-01-10', nextPaymentDate: '2025-02-10',
+                        attendanceThisMonth: 8, schedule: { day: 'Wednesday', time: '10:00 AM' },
+                        paymentHistory: [{ date: '2025-01-10', amount: 45 }, { date: '2024-12-10', amount: 45 }]
                     },
                     'ahmed@gym.com': {
-                        name: 'Ahmed Hassan',
-                        monthlyFee: 60,
-                        lastPaymentDate: '2024-12-20',
-                        nextPaymentDate: '2025-01-20',
-                        attendanceThisMonth: 15,
-                        schedule: { day: 'Tuesday', time: '7:00 PM' },
-                        paymentHistory: [
-                            { date: '2024-12-20', amount: 60 },
-                            { date: '2024-11-20', amount: 60 },
-                            { date: '2024-10-20', amount: 60 },
-                        ]
+                        name: 'Ahmed Hassan', monthlyFee: 60, lastPaymentDate: '2024-12-20', nextPaymentDate: '2025-01-20',
+                        attendanceThisMonth: 15, schedule: { day: 'Tuesday', time: '7:00 PM' },
+                        paymentHistory: [{ date: '2024-12-20', amount: 60 }, { date: '2024-11-20', amount: 60 }, { date: '2024-10-20', amount: 60 }]
                     },
-                }
+                },
+                adminPasswords: [
+                    { password: ADMIN_PASSWORD_OWNER, role: "owner" },
+                    { password: "head123", role: "head_trainer" },
+                    { password: "trainer123", role: "trainer" }
+                ]
             };
         }
 
@@ -910,7 +780,9 @@
             document.getElementById('adminSheet').classList.add('show');
             document.getElementById('adminPassword').value = '';
             document.getElementById('adminPasswordSection').style.display = 'block';
-            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('ownerControls').style.display = 'none';
+            document.getElementById('headTrainerControls').style.display = 'none';
+            document.getElementById('trainerControls').style.display = 'none';
         }
 
         function closeAdminSheet() {
@@ -920,80 +792,212 @@
 
         function verifyAdminPassword() {
             const pass = document.getElementById('adminPassword').value;
-            if (pass === ADMIN_PASSWORD) {
+            const found = data.adminPasswords.find(p => p.password === pass);
+            if (found) {
                 document.getElementById('adminPasswordSection').style.display = 'none';
-                document.getElementById('adminControls').style.display = 'block';
+                if (found.role === 'owner') {
+                    document.getElementById('ownerControls').style.display = 'block';
+                    renderOwnerUserList();
+                    renderAdminPasswordsList();
+                } else if (found.role === 'head_trainer') {
+                    document.getElementById('headTrainerControls').style.display = 'block';
+                    renderHeadTrainerUserList();
+                } else if (found.role === 'trainer') {
+                    document.getElementById('trainerControls').style.display = 'block';
+                    renderTrainerUserList();
+                }
+                showToast(`Access granted as ${found.role}!`, 'success');
                 document.getElementById('adminPassword').value = '';
-                showToast('Admin access granted!', 'success');
-                renderUserList();
             } else {
                 showToast('Wrong admin password!', 'error');
             }
         }
 
-        async function addUser() {
-            const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
-            const password = document.getElementById('newUserPassword').value.trim();
-            const role = document.getElementById('newUserRole').value;
-            const name = document.getElementById('newUserName').value.trim() || '';
-
+        // ==================== ADMIN: ADD USERS (ROLE-SPECIFIC) ====================
+        async function addUser(email, password, role, name) {
             if (!email || !password) {
                 showToast('Please enter both email and password.', 'warning');
-                return;
+                return false;
             }
-
+            email = email.toLowerCase().trim();
             if (data.users.find(u => u.email.toLowerCase() === email)) {
                 showToast('This email already exists!', 'error');
-                return;
+                return false;
             }
-
-            data.users.push({ email, password, role, name: name || email.split('@')[0] });
-
+            const user = { email, password, role, name: name || email.split('@')[0] };
+            if (role === 'trainer' || role === 'head_trainer') {
+                user.availability = null;
+            }
+            data.users.push(user);
             if (role === 'student') {
                 data.students[email] = {
-                    name: name || email.split('@')[0],
-                    monthlyFee: 50,
-                    lastPaymentDate: '—',
-                    nextPaymentDate: '—',
-                    attendanceThisMonth: 0,
-                    schedule: { day: null, time: null },
-                    paymentHistory: []
+                    name: user.name, monthlyFee: 50, lastPaymentDate: '—', nextPaymentDate: '—',
+                    attendanceThisMonth: 0, schedule: { day: null, time: null }, paymentHistory: []
                 };
             }
-
             await saveDataToFirestore();
-            document.getElementById('newUserEmail').value = '';
-            document.getElementById('newUserPassword').value = '';
-            document.getElementById('newUserName').value = '';
-            renderUserList();
-            showToast(`${role === 'trainer' ? 'Trainer' : 'Student'} added successfully!`, 'success');
+            showToast(`${role} added successfully!`, 'success');
+            return true;
+        }
+
+        async function addHeadTrainer() {
+            const email = document.getElementById('newHeadTrainerEmail').value;
+            const password = document.getElementById('newHeadTrainerPassword').value;
+            const name = document.getElementById('newHeadTrainerName').value;
+            if (await addUser(email, password, 'head_trainer', name)) {
+                document.getElementById('newHeadTrainerEmail').value = '';
+                document.getElementById('newHeadTrainerPassword').value = '';
+                document.getElementById('newHeadTrainerName').value = '';
+                renderOwnerUserList();
+            }
+        }
+
+        async function addTrainerFromOwner() {
+            const email = document.getElementById('newTrainerEmailOwner').value;
+            const password = document.getElementById('newTrainerPasswordOwner').value;
+            const name = document.getElementById('newTrainerNameOwner').value;
+            if (await addUser(email, password, 'trainer', name)) {
+                document.getElementById('newTrainerEmailOwner').value = '';
+                document.getElementById('newTrainerPasswordOwner').value = '';
+                document.getElementById('newTrainerNameOwner').value = '';
+                renderOwnerUserList();
+            }
+        }
+
+        async function addStudentFromOwner() {
+            const email = document.getElementById('newStudentEmailOwner').value;
+            const password = document.getElementById('newStudentPasswordOwner').value;
+            const name = document.getElementById('newStudentNameOwner').value;
+            if (await addUser(email, password, 'student', name)) {
+                document.getElementById('newStudentEmailOwner').value = '';
+                document.getElementById('newStudentPasswordOwner').value = '';
+                document.getElementById('newStudentNameOwner').value = '';
+                renderOwnerUserList();
+            }
+        }
+
+        async function addTrainerFromHead() {
+            const email = document.getElementById('newTrainerEmail').value;
+            const password = document.getElementById('newTrainerPassword').value;
+            const name = document.getElementById('newTrainerName').value;
+            if (await addUser(email, password, 'trainer', name)) {
+                document.getElementById('newTrainerEmail').value = '';
+                document.getElementById('newTrainerPassword').value = '';
+                document.getElementById('newTrainerName').value = '';
+                renderHeadTrainerUserList();
+            }
+        }
+
+        async function addStudentFromHead() {
+            const email = document.getElementById('newStudentEmail').value;
+            const password = document.getElementById('newStudentPassword').value;
+            const name = document.getElementById('newStudentName').value;
+            if (await addUser(email, password, 'student', name)) {
+                document.getElementById('newStudentEmail').value = '';
+                document.getElementById('newStudentPassword').value = '';
+                document.getElementById('newStudentName').value = '';
+                renderHeadTrainerUserList();
+            }
+        }
+
+        async function addStudentFromTrainer() {
+            const email = document.getElementById('newStudentEmailTrainer').value;
+            const password = document.getElementById('newStudentPasswordTrainer').value;
+            const name = document.getElementById('newStudentNameTrainer').value;
+            if (await addUser(email, password, 'student', name)) {
+                document.getElementById('newStudentEmailTrainer').value = '';
+                document.getElementById('newStudentPasswordTrainer').value = '';
+                document.getElementById('newStudentNameTrainer').value = '';
+                renderTrainerUserList();
+            }
+        }
+
+        // ==================== ADMIN PASSWORD MANAGEMENT (Owner only) ====================
+        function renderAdminPasswordsList() {
+            const container = document.getElementById('adminPasswordsList');
+            container.innerHTML = data.adminPasswords.map(p => `
+                <div class="user-list-item">
+                    <span>Password: ${p.password}</span>
+                    <span class="role-badge role-${p.role}">${p.role}</span>
+                    <button class="btn btn-danger btn-xs" onclick="deleteAdminPassword('${p.password}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteAdminPassword(password) {
+            if (password === ADMIN_PASSWORD_OWNER) {
+                showToast('Cannot delete owner password!', 'error');
+                return;
+            }
+            if (!confirm(`Delete admin password "${password}"?`)) return;
+            data.adminPasswords = data.adminPasswords.filter(p => p.password !== password);
+            saveDataToFirestore();
+            renderAdminPasswordsList();
+            showToast('Admin password deleted.', 'info');
+        }
+
+        async function addAdminPassword() {
+            const password = document.getElementById('newAdminPassword').value.trim();
+            const role = document.getElementById('newAdminPasswordRole').value;
+            if (!password) {
+                showToast('Please enter a password.', 'warning');
+                return;
+            }
+            if (data.adminPasswords.find(p => p.password === password)) {
+                showToast('This password already exists!', 'error');
+                return;
+            }
+            data.adminPasswords.push({ password, role });
+            await saveDataToFirestore();
+            document.getElementById('newAdminPassword').value = '';
+            renderAdminPasswordsList();
+            showToast('New admin password added!', 'success');
+        }
+
+        // ==================== USER LIST RENDERING ====================
+        function renderOwnerUserList() {
+            const container = document.getElementById('userListContainerOwner');
+            container.innerHTML = data.users.map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge role-${u.role}">${u.role}</span>
+                    <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.email}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderHeadTrainerUserList() {
+            const container = document.getElementById('userListContainerHead');
+            container.innerHTML = data.users.map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge role-${u.role}">${u.role}</span>
+                    <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.email}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderTrainerUserList() {
+            const container = document.getElementById('userListContainerTrainer');
+            container.innerHTML = data.users.filter(u => u.role === 'student').map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge role-student">student</span>
+                    <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.email}')">🗑️</button>
+                </div>
+            `).join('');
         }
 
         async function deleteUser(email) {
             if (!confirm(`Delete user "${email}"?`)) return;
             data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
-            if (data.students[email.toLowerCase()]) {
-                delete data.students[email.toLowerCase()];
-            }
+            if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
             await saveDataToFirestore();
-            renderUserList();
+            // Re-render visible list
+            if (document.getElementById('ownerControls').style.display === 'block') renderOwnerUserList();
+            if (document.getElementById('headTrainerControls').style.display === 'block') renderHeadTrainerUserList();
+            if (document.getElementById('trainerControls').style.display === 'block') renderTrainerUserList();
             showToast('User deleted.', 'info');
-        }
-
-        function renderUserList() {
-            const container = document.getElementById('userListContainer');
-            if (!container) return;
-            if (!data.users.length) {
-                container.innerHTML = '<p style="color:var(--text3);font-size:13px;">No users found.</p>';
-                return;
-            }
-            container.innerHTML = data.users.map(u => `
-                <div class="user-list-item">
-                    <span class="email">${u.email}</span>
-                    <span class="role-badge ${u.role === 'trainer' ? 'role-trainer' : 'role-student'}">${u.role}</span>
-                    <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.email}')">🗑️</button>
-                </div>
-            `).join('');
         }
 
         // ==================== AUTH ====================
@@ -1013,14 +1017,14 @@
                 currentUser = user;
                 document.getElementById('loginError').classList.remove('show');
                 showToast(`Welcome back, ${user.name || user.email}!`, 'success');
-                if (user.role === 'trainer') {
-                    showTrainerDashboard();
-                } else {
+                if (user.role === 'student') {
                     showStudentDashboard();
+                } else {
+                    showTrainerDashboard();
                 }
             } else {
                 const errEl = document.getElementById('loginError');
-                errEl.textContent = '❌ Invalid email, password, or role. Please try again.';
+                errEl.textContent = '❌ Invalid email, password, or role.';
                 errEl.classList.add('show');
                 showToast('Login failed. Check your credentials.', 'error');
             }
@@ -1043,6 +1047,7 @@
             document.getElementById('trainerDashboard').classList.add('active');
             document.getElementById('trainerEmailDisplay').textContent = currentUser.email;
             document.getElementById('trainerAvatar').textContent = (currentUser.name || 'T').charAt(0).toUpperCase();
+            populateTrainerAvailability();
             renderTrainerDashboard();
         }
 
@@ -1052,6 +1057,48 @@
             document.getElementById('studentEmailDisplay').textContent = currentUser.email;
             document.getElementById('studentAvatar').textContent = (currentUser.name || 'S').charAt(0).toUpperCase();
             renderStudentDashboard();
+        }
+
+        // ==================== TRAINER AVAILABILITY ====================
+        function populateTrainerAvailability() {
+            const startSelect = document.getElementById('trainerAvailStart');
+            const endSelect = document.getElementById('trainerAvailEnd');
+            startSelect.innerHTML = TIME_SLOTS.map(t => `<option value="${t}">${t}</option>`).join('');
+            endSelect.innerHTML = TIME_SLOTS.map(t => `<option value="${t}">${t}</option>`).join('');
+            if (currentUser.availability) {
+                document.getElementById('trainerAvailDay').value = currentUser.availability.day;
+                startSelect.value = currentUser.availability.start;
+                endSelect.value = currentUser.availability.end;
+            }
+        }
+
+        async function saveTrainerAvailability() {
+            const day = document.getElementById('trainerAvailDay').value;
+            const start = document.getElementById('trainerAvailStart').value;
+            const end = document.getElementById('trainerAvailEnd').value;
+            if (!day || !start || !end) {
+                showToast('Please select day, start, and end time.', 'warning');
+                return;
+            }
+            // Validate start < end
+            const startIdx = TIME_SLOTS.indexOf(start);
+            const endIdx = TIME_SLOTS.indexOf(end);
+            if (startIdx >= endIdx) {
+                showToast('End time must be after start time.', 'error');
+                return;
+            }
+            // Update current user object in data
+            const user = data.users.find(u => u.email === currentUser.email);
+            if (user) {
+                user.availability = { day, start, end };
+                currentUser.availability = user.availability;
+                await saveDataToFirestore();
+                document.getElementById('availabilitySavedMsg').style.display = 'block';
+                showToast('Availability saved!', 'success');
+                setTimeout(() => document.getElementById('availabilitySavedMsg').style.display = 'none', 3000);
+            } else {
+                showToast('User not found.', 'error');
+            }
         }
 
         // ==================== TRAINER DASHBOARD ====================
@@ -1079,8 +1126,7 @@
             const filter = document.getElementById('trainerFilter')?.value || 'all';
 
             let filtered = students.filter(s => {
-                const nameMatch = (s.name || '').toLowerCase().includes(searchTerm) ||
-                    s.email.toLowerCase().includes(searchTerm);
+                const nameMatch = (s.name || '').toLowerCase().includes(searchTerm) || s.email.toLowerCase().includes(searchTerm);
                 const status = getPaymentStatus(s);
                 if (filter === 'paid' && status !== 'paid') return false;
                 if (filter === 'overdue' && status !== 'overdue') return false;
@@ -1190,8 +1236,8 @@
                         <input type="date" id="editLastPayment" value="${student.lastPaymentDate && student.lastPaymentDate !== '—' ? student.lastPaymentDate : ''}">
                     </div>
                     <div class="form-group">
-                        <label>Next Payment Date</label>
-                        <input type="date" id="editNextPayment" value="${student.nextPaymentDate && student.nextPaymentDate !== '—' ? student.nextPaymentDate : ''}">
+                        <label>Next Payment Date (Auto)</label>
+                        <input type="date" id="editNextPayment" value="${student.nextPaymentDate && student.nextPaymentDate !== '—' ? student.nextPaymentDate : ''}" readonly>
                     </div>
                 </div>
                 <div style="background:var(--bg2); padding:12px; border-radius:var(--radius-xs); margin-top:8px;">
@@ -1212,6 +1258,18 @@
                     </div>
                 </div>
             `;
+
+            // Auto-calculate next payment when last payment changes
+            document.getElementById('editLastPayment').addEventListener('change', function() {
+                const lastDate = this.value;
+                if (lastDate) {
+                    const next = new Date(lastDate);
+                    next.setMonth(next.getMonth() + 1);
+                    document.getElementById('editNextPayment').value = next.toISOString().split('T')[0];
+                } else {
+                    document.getElementById('editNextPayment').value = '';
+                }
+            });
 
             modal.classList.add('show');
         }
@@ -1274,6 +1332,24 @@
         }
 
         // ==================== STUDENT DASHBOARD ====================
+        function getAvailableTrainersForDay(day) {
+            return data.users.filter(u => (u.role === 'trainer' || u.role === 'head_trainer') && u.availability && u.availability.day === day);
+        }
+
+        function getAvailableTimeSlotsForDay(day) {
+            const trainers = getAvailableTrainersForDay(day);
+            if (!trainers.length) return [];
+            let slots = new Set();
+            trainers.forEach(t => {
+                const startIdx = TIME_SLOTS.indexOf(t.availability.start);
+                const endIdx = TIME_SLOTS.indexOf(t.availability.end);
+                for (let i = startIdx; i <= endIdx; i++) {
+                    slots.add(TIME_SLOTS[i]);
+                }
+            });
+            return Array.from(slots).sort((a,b) => TIME_SLOTS.indexOf(a) - TIME_SLOTS.indexOf(b));
+        }
+
         function renderStudentDashboard() {
             if (!currentUser) return;
             const student = data.students[currentUser.email.toLowerCase()];
@@ -1287,16 +1363,28 @@
             document.getElementById('studentNextPayment').textContent = student.nextPaymentDate || '—';
             document.getElementById('studentAmount').textContent = `EGP ${student.monthlyFee || 0}`;
 
+            // Day picker
             const dayPicker = document.getElementById('studentDayPicker');
-            dayPicker.innerHTML = DAYS_OF_WEEK.map(d =>
-                `<div class="schedule-day ${student.schedule?.day === d ? 'selected' : ''}" onclick="selectStudentDay('${d}')">${d}</div>`
-            ).join('');
+            dayPicker.innerHTML = DAYS_OF_WEEK.map(day => {
+                const hasAvailability = getAvailableTimeSlotsForDay(day).length > 0;
+                const selected = student.schedule?.day === day ? 'selected' : '';
+                const disabled = !hasAvailability ? 'disabled' : '';
+                return `<div class="schedule-day ${selected} ${disabled}" onclick="${hasAvailability ? `selectStudentDay('${day}')` : ''}">${day}</div>`;
+            }).join('');
 
+            // Time picker (initially empty, will be filled when day selected)
             const timePicker = document.getElementById('studentTimePicker');
-            timePicker.innerHTML = TIME_SLOTS.map(t =>
-                `<div class="time-slot ${student.schedule?.time === t ? 'selected' : ''}" onclick="selectStudentTime('${t}')">${t}</div>`
-            ).join('');
+            timePicker.innerHTML = '';
+            if (student.schedule?.day) {
+                const available = getAvailableTimeSlotsForDay(student.schedule.day);
+                timePicker.innerHTML = available.map(t =>
+                    `<div class="time-slot ${student.schedule?.time === t ? 'selected' : ''}" onclick="selectStudentTime('${t}')">${t}</div>`
+                ).join('');
+                selectedStudentDay = student.schedule.day;
+                selectedStudentTime = student.schedule.time;
+            }
 
+            // Payment info
             const paymentInfo = document.getElementById('studentPaymentInfo');
             const status = getPaymentStatus(student);
             const statusColor = status === 'paid' ? 'var(--green)' : status === 'overdue' ? 'var(--red)' : status === 'due' ? 'var(--yellow)' : 'var(--text3)';
@@ -1321,6 +1409,7 @@
                 </div>
             `;
 
+            // Payment history
             const historyContainer = document.getElementById('studentPaymentHistory');
             if (!student.paymentHistory || !student.paymentHistory.length) {
                 historyContainer.innerHTML = '<p style="color:var(--text3);font-size:13px;">No payment records yet.</p>';
@@ -1338,9 +1427,15 @@
 
         function selectStudentDay(day) {
             selectedStudentDay = day;
+            selectedStudentTime = null;
             document.querySelectorAll('#studentDayPicker .schedule-day').forEach(el => {
                 el.classList.toggle('selected', el.textContent === day);
             });
+            const available = getAvailableTimeSlotsForDay(day);
+            const timePicker = document.getElementById('studentTimePicker');
+            timePicker.innerHTML = available.map(t =>
+                `<div class="time-slot" onclick="selectStudentTime('${t}')">${t}</div>`
+            ).join('');
         }
 
         function selectStudentTime(time) {
@@ -1364,9 +1459,7 @@
             await saveDataToFirestore();
             document.getElementById('scheduleSavedMsg').style.display = 'block';
             showToast('Schedule saved! Your trainer can now see it.', 'success');
-            setTimeout(() => {
-                document.getElementById('scheduleSavedMsg').style.display = 'none';
-            }, 3000);
+            setTimeout(() => document.getElementById('scheduleSavedMsg').style.display = 'none', 3000);
         }
 
         // ==================== INITIAL LOAD ====================
@@ -1388,24 +1481,19 @@
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
             document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    verifyAdminPassword();
-                }
+                if (e.key === 'Enter') verifyAdminPassword();
             });
 
             document.getElementById('trainerSearch').addEventListener('input', function() {
-                if (currentUser && currentUser.role === 'trainer') renderTrainerDashboard();
+                if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) renderTrainerDashboard();
             });
             document.getElementById('trainerFilter').addEventListener('change', function() {
-                if (currentUser && currentUser.role === 'trainer') renderTrainerDashboard();
+                if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) renderTrainerDashboard();
             });
 
             document.getElementById('editModal').addEventListener('click', function(e) {
                 if (e.target === this) closeEditModal();
             });
-
-            selectedStudentDay = null;
-            selectedStudentTime = null;
 
             showToast('Data loaded successfully!', 'success');
         });
