@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymFlow Pro - Trainer & Student Management</title>
+    <style>
+        :root {
+            --bg: #0d0d14;
+            --bg2: #12121e;
+            --card: #1a1a2e;
+            --card2: #1f1f38;
+            --border: #2a2a45;
+            --text: #f0f0f5;
+            --text2: #a0a0b8;
+            --text3: #6b6b85;
+            --accent: #ff6b35;
+            --accent2: #ff8c42;
+            --accent-glow: rgba(255, 107, 53, 0.3);
+            --green: #2ecc71;
+            --green-glow: rgba(46, 204, 113, 0.3);
+            --red: #e74c3c;
+            --red-glow: rgba(231, 76, 60, 0.3);
+            --yellow: #f39c12;
+            --yellow-glow: rgba(243, 156, 18, 0.3);
+            --blue: #3498db;
+            --blue-glow: rgba(52, 152, 219, 0.3);
+            --purple: #9b59b6;
+            --purple-glow: rgba(155, 89, 182, 0.3);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            padding: 20px;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(255, 107, 53, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(46, 204, 113, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(52, 152, 219, 0.03) 0%, transparent 50%);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            animation: slideInRight 0.4s ease, fadeOut 0.4s ease 3s forwards;
+            box-shadow: var(--shadow);
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+        .toast-success {
+            background: #1a3a2a;
+            border: 1px solid var(--green);
+            color: var(--green);
+        }
+        .toast-error {
+            background: #3a1a1a;
+            border: 1px solid var(--red);
+            color: var(--red);
+        }
+        .toast-info {
+            background: #1a2a3a;
+            border: 1px solid var(--blue);
+            color: var(--blue);
+        }
+        .toast-warning {
+            background: #3a2a1a;
+            border: 1px solid var(--yellow);
+            color: var(--yellow);
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(50px); }
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            animation: fadeInPage 0.5s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 85vh;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+        .logo-section {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .logo-icon {
+            font-size: 56px;
+            margin-bottom: 10px;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .logo-title {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2), #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo-subtitle {
+            color: var(--text3);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .login-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 35px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2), #ffcc00);
+        }
+        .login-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .login-card .sub-text {
+            color: var(--text3);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            color: var(--text);
+            font-size: 15px;
+            transition: var(--transition);
+            outline: none;
+            font-family: var(--font);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0a0b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+        .btn {
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background: var(--bg2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--red-glow);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--red-glow);
+        }
+        .btn-success {
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--green-glow);
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--green-glow);
+        }
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: var(--radius-xs);
+        }
+        .btn-xs {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: var(--radius-xs);
+        }
+        .btn-block {
+            width: 100%;
+        }
+        .error-msg {
+            color: var(--red);
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        .error-msg.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* Admin Panel Bottom Sheet */
+        .admin-fixed-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9000;
+            background: var(--card);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-fixed-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+        }
+        .admin-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9500;
+            animation: fadeInPage 0.2s ease;
+        }
+        .admin-overlay.show {
+            display: block;
+        }
+        .admin-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9600;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: var(--radius) var(--radius) 0 0;
+            padding: 30px 25px;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .admin-sheet.show {
+            transform: translateY(0);
+        }
+        .admin-sheet h3 {
+            color: var(--accent);
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .admin-sheet .admin-sub {
+            color: var(--text3);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .admin-sheet .close-admin {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 28px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+        }
+        .admin-sheet .close-admin:hover {
+            color: var(--red);
+        }
+        .admin-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text2);
+            margin: 16px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--bg2);
+            border-radius: var(--radius-xs);
+            margin-bottom: 6px;
+            font-size: 13px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .user-list-item .email {
+            font-weight: 600;
+            color: var(--text);
+            word-break: break-all;
+        }
+        .user-list-item .role-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .role-trainer {
+            background: var(--purple-glow);
+            color: var(--purple);
+            border: 1px solid var(--purple);
+        }
+        .role-student {
+            background: var(--blue-glow);
+            color: var(--blue);
+            border: 1px solid var(--blue);
+        }
+
+        /* Dashboard Layout */
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .dashboard-header .dash-logo {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .dashboard-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text2);
+        }
+        .dashboard-header .user-info .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 16px;
+        }
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 8px 16px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            font-size: 13px;
+            transition: var(--transition);
+            font-family: var(--font);
+        }
+        .btn-logout:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .stat-card .stat-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text);
+        }
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+        .stat-card.accent {
+            border-color: var(--accent);
+        }
+        .stat-card.accent .stat-value {
+            color: var(--accent);
+        }
+        .stat-card.green {
+            border-color: var(--green);
+        }
+        .stat-card.green .stat-value {
+            color: var(--green);
+        }
+        .stat-card.yellow {
+            border-color: var(--yellow);
+        }
+        .stat-card.yellow .stat-value {
+            color: var(--yellow);
+        }
+        .stat-card.red {
+            border-color: var(--red);
+        }
+        .stat-card.red .stat-value {
+            color: var(--red);
+        }
+        .stat-card.blue {
+            border-color: var(--blue);
+        }
+        .stat-card.blue .stat-value {
+            color: var(--blue);
+        }
+
+        /* Student Cards Grid */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+            margin-top: 16px;
+        }
+        .student-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .student-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+        .student-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .student-card .student-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .student-card .payment-status {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .status-paid {
+            background: var(--green-glow);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        .status-overdue {
+            background: var(--red-glow);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+        .status-due {
+            background: var(--yellow-glow);
+            color: var(--yellow);
+            border: 1px solid var(--yellow);
+        }
+        .status-none {
+            background: var(--bg2);
+            color: var(--text3);
+            border: 1px solid var(--border);
+        }
+        .student-card .card-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text2);
+        }
+        .student-card .card-info div {
+            background: var(--bg2);
+            padding: 10px 12px;
+            border-radius: var(--radius-xs);
+        }
+        .student-card .card-info .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text3);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .student-card .card-info .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInPage 0.2s ease;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 550px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            animation: fadeInPage 0.3s ease;
+            position: relative;
+        }
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        .modal .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+        }
+        .modal .close-btn:hover {
+            color: var(--red);
+        }
+        .modal .form-group {
+            margin-bottom: 14px;
+        }
+        .modal .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .modal .btn {
+            margin-top: 8px;
+        }
+
+        /* Schedule Section */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .schedule-day {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .schedule-day:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .schedule-day.selected {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .time-slot {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            padding: 8px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        .time-slot:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .time-slot.selected {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Payment History */
+        .payment-history {
+            margin-top: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .payment-history .pay-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg2);
+            border-radius: var(--radius-xs);
+            margin-bottom: 4px;
+            font-size: 13px;
+            align-items: center;
+        }
+        .payment-history .pay-date {
+            color: var(--text2);
+        }
+        .payment-history .pay-amount {
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .login-container { min-height: 80vh; }
+            .login-card { padding: 28px 20px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .students-grid { grid-template-columns: 1fr; }
+            .modal .form-row { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; align-items: flex-start; }
+            .schedule-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-card .stat-value { font-size: 22px; }
+            .student-card .card-info { grid-template-columns: 1fr; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text3);
+            font-size: 14px;
+        }
+        .empty-state .empty-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* Week schedule */
+        .week-schedule {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .week-day-col {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            padding: 12px;
+            min-height: 80px;
+        }
+        .week-day-col h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .week-day-col .schedule-entry {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--card);
+            border-radius: 4px;
+            margin-bottom: 4px;
+            color: var(--text2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ==================== LOGIN PAGE ==================== -->
+    <div class="page active" id="loginPage">
+        <div class="login-container">
+            <div class="logo-section">
+                <span class="logo-icon">🏋️</span>
+                <div class="logo-title">GymFlow Pro</div>
+                <div class="logo-subtitle">Trainer & Student Management</div>
+            </div>
+
+            <div class="login-card">
+                <h2>Welcome Back 👋</h2>
+                <p class="sub-text">Login to access your dashboard</p>
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>I am a</label>
+                        <select id="loginRole">
+                            <option value="student">Student</option>
+                            <option value="trainer">Trainer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 8px;">
+                        🔐 Login to Dashboard
+                    </button>
+                    <div class="error-msg" id="loginError">Invalid credentials. Please try again.</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN BOTTOM SHEET ==================== -->
+    <button class="admin-fixed-btn" onclick="openAdminSheet()">⚙️ Admin Panel</button>
+
+    <div class="admin-overlay" id="adminOverlay" onclick="closeAdminSheet()"></div>
+
+    <div class="admin-sheet" id="adminSheet">
+        <button class="close-admin" onclick="closeAdminSheet()">✕</button>
+        <h3>🔐 Admin Access</h3>
+        <p class="admin-sub">Manage user accounts below.</p>
+        <div id="adminPasswordSection">
+            <div class="form-group">
+                <label>Admin Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="verifyAdminPassword()">🔑 Unlock Panel</button>
+        </div>
+
+        <div id="adminControls" style="display: none;">
+            <div class="admin-section-title">➕ Add New User</div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="newUserEmail" placeholder="user@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" id="newUserPassword" placeholder="Set a password">
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select id="newUserRole">
+                    <option value="student">Student</option>
+                    <option value="trainer">Trainer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Full Name (optional)</label>
+                <input type="text" id="newUserName" placeholder="Enter full name">
+            </div>
+            <button class="btn btn-success btn-sm btn-block" onclick="addUser()">➕ Add User</button>
+
+            <div class="admin-section-title" style="margin-top: 20px;">📋 Existing Users</div>
+            <div id="userListContainer" style="margin-top: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TRAINER DASHBOARD ==================== -->
+    <div class="page" id="trainerDashboard">
+        <div class="dashboard-header">
+            <span class="dash-logo">🏋️ GymFlow Pro — Trainer</span>
+            <div class="user-info">
+                <span class="avatar" id="trainerAvatar">T</span>
+                <span id="trainerEmailDisplay">trainer@example.com</span>
+                <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="trainerStats">
+            <div class="stat-card accent">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="statTotalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">💵</div>
+                <div class="stat-value" id="statPaidThisMonth">EGP 0</div>
+                <div class="stat-label">Collected This Month</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-value" id="statDueSoon">0</div>
+                <div class="stat-label">Payments Due Soon</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-value" id="statOverdue">0</div>
+                <div class="stat-label">Overdue Payments</div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+            <input type="text" id="trainerSearch" placeholder="🔍 Search students by name or email..." style="flex: 1; min-width: 200px; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; outline: none;">
+            <select id="trainerFilter" style="padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; outline: none; cursor: pointer;">
+                <option value="all">All Students</option>
+                <option value="paid">Paid</option>
+                <option value="overdue">Overdue</option>
+                <option value="due">Due Soon</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 8px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--text2); margin-bottom: 12px;">📋 Student Roster</h3>
+            <div class="students-grid" id="trainerStudentList"></div>
+        </div>
+
+        <div style="margin-top: 28px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--text2); margin-bottom: 12px;">📅 Weekly Schedule Overview</h3>
+            <div class="week-schedule" id="weekSchedule"></div>
+        </div>
+    </div>
+
+    <!-- ==================== STUDENT DASHBOARD ==================== -->
+    <div class="page" id="studentDashboard">
+        <div class="dashboard-header">
+            <span class="dash-logo">🏋️ GymFlow Pro — Student</span>
+            <div class="user-info">
+                <span class="avatar" id="studentAvatar">S</span>
+                <span id="studentEmailDisplay">student@example.com</span>
+                <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="studentStats">
+            <div class="stat-card accent">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="studentAttendance">0</div>
+                <div class="stat-label">Sessions This Month</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">💵</div>
+                <div class="stat-value" id="studentLastPayment">—</div>
+                <div class="stat-label">Last Payment</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-value" id="studentNextPayment">—</div>
+                <div class="stat-label">Next Payment Due</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="studentAmount">EGP 0</div>
+                <div class="stat-label">Monthly Fee</div>
+            </div>
+        </div>
+
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">📅 Choose Your Training Schedule</h3>
+            <p style="color: var(--text3); font-size: 13px; margin-bottom: 16px;">Select the day and time you plan to attend. Your trainer will see this schedule.</p>
+            <div class="schedule-grid" id="studentDayPicker"></div>
+            <div style="margin-top: 12px;">
+                <label style="font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px;">Time Slot</label>
+                <div class="time-slots" id="studentTimePicker"></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveStudentSchedule()" style="margin-top: 16px;">💾 Save Schedule</button>
+            <div id="scheduleSavedMsg" style="color: var(--green); font-size: 13px; margin-top: 8px; display: none;">✅ Schedule saved successfully!</div>
+        </div>
+
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--accent);">💳 Payment Information</h3>
+            <div id="studentPaymentInfo"></div>
+            <div style="margin-top: 16px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text2); margin-bottom: 8px;">📜 Payment History</h4>
+                <div class="payment-history" id="studentPaymentHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL (Trainer Edit) ==================== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeEditModal()">✕</button>
+            <h3>✏️ Edit Student Details</h3>
+            <div id="editModalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'gymflow_data';
+        const ADMIN_PASSWORD = 'Omar_2011';
+
+        const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const TIME_SLOTS = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
+            '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
+        ];
+
+        function getDefaultData() {
+            return {
+                users: [
+                    { email: 'trainer@gym.com', password: 'trainer123', role: 'trainer', name: 'Coach Omar' },
+                    { email: 'student@gym.com', password: 'student123', role: 'student', name: 'John Doe' },
+                    { email: 'sara@gym.com', password: 'sara123', role: 'student', name: 'Sara Ali' },
+                    { email: 'ahmed@gym.com', password: 'ahmed123', role: 'student', name: 'Ahmed Hassan' },
+                ],
+                students: {
+                    'student@gym.com': {
+                        name: 'John Doe',
+                        monthlyFee: 50,
+                        lastPaymentDate: '2025-01-05',
+                        nextPaymentDate: '2025-02-05',
+                        attendanceThisMonth: 12,
+                        schedule: { day: 'Monday', time: '6:00 AM' },
+                        paymentHistory: [
+                            { date: '2025-01-05', amount: 50 },
+                            { date: '2024-12-05', amount: 50 },
+                            { date: '2024-11-05', amount: 50 },
+                        ]
+                    },
+                    'sara@gym.com': {
+                        name: 'Sara Ali',
+                        monthlyFee: 45,
+                        lastPaymentDate: '2025-01-10',
+                        nextPaymentDate: '2025-02-10',
+                        attendanceThisMonth: 8,
+                        schedule: { day: 'Wednesday', time: '10:00 AM' },
+                        paymentHistory: [
+                            { date: '2025-01-10', amount: 45 },
+                            { date: '2024-12-10', amount: 45 },
+                        ]
+                    },
+                    'ahmed@gym.com': {
+                        name: 'Ahmed Hassan',
+                        monthlyFee: 60,
+                        lastPaymentDate: '2024-12-20',
+                        nextPaymentDate: '2025-01-20',
+                        attendanceThisMonth: 15,
+                        schedule: { day: 'Tuesday', time: '7:00 PM' },
+                        paymentHistory: [
+                            { date: '2024-12-20', amount: 60 },
+                            { date: '2024-11-20', amount: 60 },
+                            { date: '2024-10-20', amount: 60 },
+                        ]
+                    },
+                }
+            };
+        }
+
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                const defaultData = getDefaultData();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                const defaultData = getDefaultData();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function getData() {
+            return loadData();
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
+        }
+
+        // ==================== ADMIN SHEET FUNCTIONS ====================
+        function openAdminSheet() {
+            document.getElementById('adminOverlay').classList.add('show');
+            document.getElementById('adminSheet').classList.add('show');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPasswordSection').style.display = 'block';
+            document.getElementById('adminControls').style.display = 'none';
+        }
+
+        function closeAdminSheet() {
+            document.getElementById('adminOverlay').classList.remove('show');
+            document.getElementById('adminSheet').classList.remove('show');
+        }
+
+        function verifyAdminPassword() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === ADMIN_PASSWORD) {
+                document.getElementById('adminPasswordSection').style.display = 'none';
+                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+                showToast('Admin access granted!', 'success');
+                renderUserList();
+            } else {
+                showToast('Wrong admin password!', 'error');
+            }
+        }
+
+        function addUser() {
+            const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
+            const password = document.getElementById('newUserPassword').value.trim();
+            const role = document.getElementById('newUserRole').value;
+            const name = document.getElementById('newUserName').value.trim() || '';
+
+            if (!email || !password) {
+                showToast('Please enter both email and password.', 'warning');
+                return;
+            }
+
+            const data = getData();
+            if (data.users.find(u => u.email.toLowerCase() === email)) {
+                showToast('This email already exists!', 'error');
+                return;
+            }
+
+            data.users.push({ email, password, role, name: name || email.split('@')[0] });
+
+            if (role === 'student') {
+                data.students[email] = {
+                    name: name || email.split('@')[0],
+                    monthlyFee: 50,
+                    lastPaymentDate: '—',
+                    nextPaymentDate: '—',
+                    attendanceThisMonth: 0,
+                    schedule: { day: null, time: null },
+                    paymentHistory: []
+                };
+            }
+
+            saveData(data);
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('newUserName').value = '';
+            renderUserList();
+            showToast(`${role === 'trainer' ? 'Trainer' : 'Student'} added successfully!`, 'success');
+        }
+
+        function deleteUser(email) {
+            if (!confirm(`Delete user "${email}"?`)) return;
+            const data = getData();
+            data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+            if (data.students[email.toLowerCase()]) {
+                delete data.students[email.toLowerCase()];
+            }
+            saveData(data);
+            renderUserList();
+            showToast('User deleted.', 'info');
+        }
+
+        function renderUserList() {
+            const data = getData();
+            const container = document.getElementById('userListContainer');
+            if (!container) return;
+            if (!data.users.length) {
+                container.innerHTML = '<p style="color:var(--text3);font-size:13px;">No users found.</p>';
+                return;
+            }
+            container.innerHTML = data.users.map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge ${u.role === 'trainer' ? 'role-trainer' : 'role-student'}">${u.role}</span>
+                    <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.email}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // ==================== AUTH ====================
+        let currentUser = null;
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginRole').value;
+
+            const data = getData();
+            const user = data.users.find(u =>
+                u.email.toLowerCase() === email && u.password === password && u.role === role
+            );
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginError').classList.remove('show');
+                showToast(`Welcome back, ${user.name || user.email}!`, 'success');
+                if (user.role === 'trainer') {
+                    showTrainerDashboard();
+                } else {
+                    showStudentDashboard();
+                }
+            } else {
+                const errEl = document.getElementById('loginError');
+                errEl.textContent = '❌ Invalid email, password, or role. Please try again.';
+                errEl.classList.add('show');
+                showToast('Login failed. Check your credentials.', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            showLoginPage();
+            showToast('Logged out successfully.', 'info');
+        }
+
+        function showLoginPage() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('loginPage').classList.add('active');
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showTrainerDashboard() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('trainerDashboard').classList.add('active');
+            document.getElementById('trainerEmailDisplay').textContent = currentUser.email;
+            document.getElementById('trainerAvatar').textContent = (currentUser.name || 'T').charAt(0).toUpperCase();
+            renderTrainerDashboard();
+        }
+
+        function showStudentDashboard() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('studentDashboard').classList.add('active');
+            document.getElementById('studentEmailDisplay').textContent = currentUser.email;
+            document.getElementById('studentAvatar').textContent = (currentUser.name || 'S').charAt(0).toUpperCase();
+            renderStudentDashboard();
+        }
+
+        // ==================== TRAINER DASHBOARD ====================
+        function getStudentList() {
+            const data = getData();
+            return Object.keys(data.students).map(email => ({
+                email,
+                ...data.students[email]
+            }));
+        }
+
+        function getPaymentStatus(student) {
+            if (!student.nextPaymentDate || student.nextPaymentDate === '—') return 'none';
+            const next = new Date(student.nextPaymentDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((next - today) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return 'overdue';
+            if (diffDays <= 5) return 'due';
+            return 'paid';
+        }
+
+        function renderTrainerDashboard() {
+            const data = getData();
+            const students = getStudentList();
+            const searchTerm = (document.getElementById('trainerSearch')?.value || '').toLowerCase();
+            const filter = document.getElementById('trainerFilter')?.value || 'all';
+
+            let filtered = students.filter(s => {
+                const nameMatch = (s.name || '').toLowerCase().includes(searchTerm) ||
+                    s.email.toLowerCase().includes(searchTerm);
+                const status = getPaymentStatus(s);
+                if (filter === 'paid' && status !== 'paid') return false;
+                if (filter === 'overdue' && status !== 'overdue') return false;
+                if (filter === 'due' && status !== 'due') return false;
+                return nameMatch;
+            });
+
+            const totalStudents = students.length;
+            const paidThisMonth = students.filter(s => {
+                if (!s.lastPaymentDate || s.lastPaymentDate === '—') return false;
+                const lastPay = new Date(s.lastPaymentDate);
+                const now = new Date();
+                return lastPay.getMonth() === now.getMonth() && lastPay.getFullYear() === now.getFullYear();
+            }).reduce((sum, s) => sum + (s.monthlyFee || 0), 0);
+            const dueSoon = students.filter(s => getPaymentStatus(s) === 'due').length;
+            const overdue = students.filter(s => getPaymentStatus(s) === 'overdue').length;
+
+            document.getElementById('statTotalStudents').textContent = totalStudents;
+            document.getElementById('statPaidThisMonth').textContent = `EGP ${paidThisMonth}`;
+            document.getElementById('statDueSoon').textContent = dueSoon;
+            document.getElementById('statOverdue').textContent = overdue;
+
+            const container = document.getElementById('trainerStudentList');
+            if (!filtered.length) {
+                container.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span>No students found.</div>';
+            } else {
+                container.innerHTML = filtered.map(s => {
+                    const status = getPaymentStatus(s);
+                    const statusClass = status === 'paid' ? 'status-paid' : status === 'overdue' ? 'status-overdue' :
+                        status === 'due' ? 'status-due' : 'status-none';
+                    const statusLabel = status === 'paid' ? 'Paid' : status === 'overdue' ? 'Overdue' : status === 'due' ? 'Due Soon' : 'No Data';
+                    return `
+                        <div class="student-card" onclick="openEditModal('${s.email}')">
+                            <div class="card-header">
+                                <span class="student-name">${s.name || s.email.split('@')[0]}</span>
+                                <span class="payment-status ${statusClass}">${statusLabel}</span>
+                            </div>
+                            <div class="card-info">
+                                <div><span class="label">📧 Email</span><span class="value">${s.email}</span></div>
+                                <div><span class="label">💵 Monthly Fee</span><span class="value">EGP ${s.monthlyFee || 0}</span></div>
+                                <div><span class="label">📅 Last Payment</span><span class="value">${s.lastPaymentDate || '—'}</span></div>
+                                <div><span class="label">🔔 Next Due</span><span class="value">${s.nextPaymentDate || '—'}</span></div>
+                                <div><span class="label">🏃 Attendance</span><span class="value">${s.attendanceThisMonth || 0} sessions</span></div>
+                                <div><span class="label">📋 Schedule</span><span class="value">${s.schedule?.day || 'Not set'} ${s.schedule?.time ? '· ' + s.schedule.time : ''}</span></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderWeekSchedule(students);
+        }
+
+        function renderWeekSchedule(students) {
+            const container = document.getElementById('weekSchedule');
+            if (!container) return;
+            const days = DAYS_OF_WEEK;
+            container.innerHTML = days.map(day => {
+                const dayStudents = students.filter(s => s.schedule?.day === day && s.schedule?.time);
+                return `
+                    <div class="week-day-col">
+                        <h4>${day}</h4>
+                        ${dayStudents.length ? dayStudents.map(s => 
+                            `<div class="schedule-entry">${s.name} · ${s.schedule.time}</div>`
+                        ).join('') : '<div class="schedule-entry" style="color:var(--text3);">—</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== EDIT MODAL (Trainer) ====================
+        let editingStudentEmail = null;
+
+        function openEditModal(email) {
+            editingStudentEmail = email;
+            const data = getData();
+            const student = data.students[email];
+            if (!student) return;
+
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('editModalContent');
+
+            const status = getPaymentStatus(student);
+            const statusLabel = status === 'paid' ? '✅ Paid' : status === 'overdue' ? '🚨 Overdue' : status === 'due' ? '⚠️ Due Soon' : '❓ No Data';
+
+            content.innerHTML = `
+                <div style="background:var(--bg2); padding:14px; border-radius:var(--radius-xs); margin-bottom:16px;">
+                    <strong style="font-size:16px;">${student.name}</strong> · ${student.email}<br>
+                    <span style="font-size:12px; color:var(--text3);">Status: ${statusLabel}</span>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editStudentName" value="${student.name || ''}" placeholder="Student name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monthly Fee (EGP)</label>
+                        <input type="number" id="editMonthlyFee" value="${student.monthlyFee || 50}" min="0" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance This Month</label>
+                        <input type="number" id="editAttendance" value="${student.attendanceThisMonth || 0}" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Last Payment Date</label>
+                        <input type="date" id="editLastPayment" value="${student.lastPaymentDate && student.lastPaymentDate !== '—' ? student.lastPaymentDate : ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Next Payment Date</label>
+                        <input type="date" id="editNextPayment" value="${student.nextPaymentDate && student.nextPaymentDate !== '—' ? student.nextPaymentDate : ''}">
+                    </div>
+                </div>
+                <div style="background:var(--bg2); padding:12px; border-radius:var(--radius-xs); margin-top:8px;">
+                    <span style="font-size:12px; text-transform:uppercase; color:var(--text3); letter-spacing:0.5px;">📅 Schedule (set by student)</span><br>
+                    <span style="font-size:14px; font-weight:600;">${student.schedule?.day || 'Not set'} ${student.schedule?.time ? '· ' + student.schedule.time : ''}</span>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="saveStudentEdit()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="addPaymentRecord()">➕ Add Payment</button>
+                    <button class="btn btn-danger btn-sm" onclick="closeEditModal()">Cancel</button>
+                </div>
+                <div style="margin-top:16px;">
+                    <h4 style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px;">📜 Payment History</h4>
+                    <div class="payment-history" style="max-height:150px;">
+                        ${(student.paymentHistory || []).length ? student.paymentHistory.map(p => 
+                            `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span><button class="btn btn-xs btn-danger" onclick="removePaymentRecord('${p.date}','${p.amount}')">🗑️</button></div>`
+                        ).join('') : '<p style="color:var(--text3);font-size:12px;">No payment records.</p>'}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            editingStudentEmail = null;
+        }
+
+        function saveStudentEdit() {
+            if (!editingStudentEmail) return;
+            const data = getData();
+            const student = data.students[editingStudentEmail];
+            if (!student) return;
+
+            student.name = document.getElementById('editStudentName').value.trim() || student.name;
+            student.monthlyFee = parseFloat(document.getElementById('editMonthlyFee').value) || 0;
+            student.attendanceThisMonth = parseInt(document.getElementById('editAttendance').value) || 0;
+            const lastPay = document.getElementById('editLastPayment').value;
+            const nextPay = document.getElementById('editNextPayment').value;
+            student.lastPaymentDate = lastPay || '—';
+            student.nextPaymentDate = nextPay || '—';
+
+            // Update user name too
+            const user = data.users.find(u => u.email.toLowerCase() === editingStudentEmail.toLowerCase());
+            if (user) user.name = student.name;
+
+            saveData(data);
+            closeEditModal();
+            renderTrainerDashboard();
+            showToast('Student details saved!', 'success');
+        }
+
+        function addPaymentRecord() {
+            if (!editingStudentEmail) return;
+            const data = getData();
+            const student = data.students[editingStudentEmail];
+            if (!student) return;
+
+            const amount = student.monthlyFee || 50;
+            const today = new Date().toISOString().split('T')[0];
+            if (!student.paymentHistory) student.paymentHistory = [];
+            student.paymentHistory.unshift({ date: today, amount: amount });
+            student.lastPaymentDate = today;
+            const next = new Date();
+            next.setMonth(next.getMonth() + 1);
+            student.nextPaymentDate = next.toISOString().split('T')[0];
+
+            saveData(data);
+            openEditModal(editingStudentEmail);
+            showToast('Payment record added!', 'success');
+        }
+
+        function removePaymentRecord(date, amount) {
+            if (!editingStudentEmail) return;
+            if (!confirm(`Remove payment of EGP ${amount} on ${date}?`)) return;
+            const data = getData();
+            const student = data.students[editingStudentEmail];
+            if (!student || !student.paymentHistory) return;
+            student.paymentHistory = student.paymentHistory.filter(p => !(p.date === date && p.amount === amount));
+            saveData(data);
+            openEditModal(editingStudentEmail);
+            showToast('Payment record removed.', 'info');
+        }
+
+        // ==================== STUDENT DASHBOARD ====================
+        function renderStudentDashboard() {
+            if (!currentUser) return;
+            const data = getData();
+            const student = data.students[currentUser.email.toLowerCase()];
+            if (!student) {
+                showToast('No student record found for your account.', 'error');
+                return;
+            }
+
+            document.getElementById('studentAttendance').textContent = student.attendanceThisMonth || 0;
+            document.getElementById('studentLastPayment').textContent = student.lastPaymentDate || '—';
+            document.getElementById('studentNextPayment').textContent = student.nextPaymentDate || '—';
+            document.getElementById('studentAmount').textContent = `EGP ${student.monthlyFee || 0}`;
+
+            const dayPicker = document.getElementById('studentDayPicker');
+            dayPicker.innerHTML = DAYS_OF_WEEK.map(d =>
+                `<div class="schedule-day ${student.schedule?.day === d ? 'selected' : ''}" onclick="selectStudentDay('${d}')">${d}</div>`
+            ).join('');
+
+            const timePicker = document.getElementById('studentTimePicker');
+            timePicker.innerHTML = TIME_SLOTS.map(t =>
+                `<div class="time-slot ${student.schedule?.time === t ? 'selected' : ''}" onclick="selectStudentTime('${t}')">${t}</div>`
+            ).join('');
+
+            const paymentInfo = document.getElementById('studentPaymentInfo');
+            const status = getPaymentStatus(student);
+            const statusColor = status === 'paid' ? 'var(--green)' : status === 'overdue' ? 'var(--red)' : status === 'due' ? 'var(--yellow)' : 'var(--text3)';
+            paymentInfo.innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div style="background:var(--bg2); padding:14px; border-radius:var(--radius-xs);">
+                        <span style="font-size:11px;text-transform:uppercase;color:var(--text3);letter-spacing:0.5px;">Status</span><br>
+                        <span style="font-size:18px;font-weight:700;color:${statusColor};">${status === 'paid' ? '✅ Paid' : status === 'overdue' ? '🚨 Overdue' : status === 'due' ? '⚠️ Due Soon' : '—'}</span>
+                    </div>
+                    <div style="background:var(--bg2); padding:14px; border-radius:var(--radius-xs);">
+                        <span style="font-size:11px;text-transform:uppercase;color:var(--text3);letter-spacing:0.5px;">Monthly Fee</span><br>
+                        <span style="font-size:18px;font-weight:700;">EGP ${student.monthlyFee || 0}</span>
+                    </div>
+                    <div style="background:var(--bg2); padding:14px; border-radius:var(--radius-xs);">
+                        <span style="font-size:11px;text-transform:uppercase;color:var(--text3);letter-spacing:0.5px;">Last Payment</span><br>
+                        <span style="font-size:16px;font-weight:600;">${student.lastPaymentDate || '—'}</span>
+                    </div>
+                    <div style="background:var(--bg2); padding:14px; border-radius:var(--radius-xs);">
+                        <span style="font-size:11px;text-transform:uppercase;color:var(--text3);letter-spacing:0.5px;">Next Due Date</span><br>
+                        <span style="font-size:16px;font-weight:600;">${student.nextPaymentDate || '—'}</span>
+                    </div>
+                </div>
+            `;
+
+            const historyContainer = document.getElementById('studentPaymentHistory');
+            if (!student.paymentHistory || !student.paymentHistory.length) {
+                historyContainer.innerHTML = '<p style="color:var(--text3);font-size:13px;">No payment records yet.</p>';
+            } else {
+                historyContainer.innerHTML = student.paymentHistory.map(p =>
+                    `<div class="pay-item"><span class="pay-date">${p.date}</span><span class="pay-amount">EGP ${p.amount}</span></div>`
+                ).join('');
+            }
+
+            document.getElementById('scheduleSavedMsg').style.display = 'none';
+        }
+
+        let selectedStudentDay = null;
+        let selectedStudentTime = null;
+
+        function selectStudentDay(day) {
+            selectedStudentDay = day;
+            document.querySelectorAll('#studentDayPicker .schedule-day').forEach(el => {
+                el.classList.toggle('selected', el.textContent === day);
+            });
+        }
+
+        function selectStudentTime(time) {
+            selectedStudentTime = time;
+            document.querySelectorAll('#studentTimePicker .time-slot').forEach(el => {
+                el.classList.toggle('selected', el.textContent === time);
+            });
+        }
+
+        function saveStudentSchedule() {
+            if (!currentUser) return;
+            const data = getData();
+            const student = data.students[currentUser.email.toLowerCase()];
+            if (!student) return;
+
+            if (!selectedStudentDay || !selectedStudentTime) {
+                showToast('Please select both a day and a time.', 'warning');
+                return;
+            }
+
+            student.schedule = { day: selectedStudentDay, time: selectedStudentTime };
+            saveData(data);
+            document.getElementById('scheduleSavedMsg').style.display = 'block';
+            showToast('Schedule saved! Your trainer can now see it.', 'success');
+            setTimeout(() => {
+                document.getElementById('scheduleSavedMsg').style.display = 'none';
+            }, 3000);
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyAdminPassword();
+                }
+            });
+
+            document.getElementById('trainerSearch').addEventListener('input', function() {
+                if (currentUser && currentUser.role === 'trainer') renderTrainerDashboard();
+            });
+            document.getElementById('trainerFilter').addEventListener('change', function() {
+                if (currentUser && currentUser.role === 'trainer') renderTrainerDashboard();
+            });
+
+            document.getElementById('editModal').addEventListener('click', function(e) {
+                if (e.target === this) closeEditModal();
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditModal();
+                closeAdminSheet();
+            }
+        });
+    </script>
+</body>
+</html>
