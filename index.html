@@ -727,7 +727,38 @@
             '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
         ];
 
-        // ==================== LOAD DATA FROM FIRESTORE ====================
+        // ==================== LOAD DATA FROM FIRESTORE (with real-time listener) ====================
+        function setupRealtimeListener() {
+            DATA_DOC.onSnapshot((doc) => {
+                if (doc.exists) {
+                    data = doc.data();
+                    if (!data.users) data.users = [];
+                    if (!data.students) data.students = {};
+                    if (!data.adminPasswords) data.adminPasswords = [
+                        { password: ADMIN_PASSWORD_OWNER, role: "owner" },
+                        { password: "head123", role: "head_trainer" },
+                        { password: "trainer123", role: "trainer" }
+                    ];
+                    console.log('Real-time update received');
+                    // Re-render current dashboard if needed
+                    if (currentUser) {
+                        if (currentUser.role === 'student') {
+                            renderStudentDashboard();
+                        } else if (currentUser.role === 'trainer' || currentUser.role === 'head_trainer') {
+                            renderTrainerDashboard();
+                            populateTrainerAvailability();
+                        }
+                    }
+                } else {
+                    // Document doesn't exist; create default
+                    data = getDefaultData();
+                    saveDataToFirestore();
+                }
+            }, (error) => {
+                console.error('Real-time listener error:', error);
+            });
+        }
+
         async function loadDataFromFirestore() {
             try {
                 const doc = await DATA_DOC.get();
@@ -1503,6 +1534,7 @@
             loginCard.prepend(loadingDiv);
 
             await loadDataFromFirestore();
+            setupRealtimeListener();
 
             const loadEl = document.getElementById('loadingIndicator');
             if (loadEl) loadEl.remove();
