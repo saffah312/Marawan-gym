@@ -1807,6 +1807,8 @@
         <button class="close-admin" onclick="closeAdminSheet()"><i class="fas fa-xmark"></i></button>
         <h3>Admin Access</h3>
         <p class="admin-sub">Enter admin password</p>
+
+        <!-- Password Section -->
         <div id="adminPasswordSection">
             <div class="form-group">
                 <label>Admin Password</label>
@@ -1814,19 +1816,22 @@
             </div>
             <button class="btn-secondary btn-sm" onclick="verifyAdminPassword()">Unlock Panel</button>
         </div>
-        <div id="adminControls" style="display:none;">
-            <div class="admin-section-title">Add New User</div>
+
+        <!-- Owner Controls -->
+        <div id="ownerControls" style="display:none;">
+            <div class="admin-section-title">Owner Panel</div>
+            <!-- Single Add User Form -->
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="newUserEmail" placeholder="user@example.com" />
+                <input type="email" id="newUserEmailOwner" placeholder="user@example.com" />
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="text" id="newUserPassword" placeholder="Set a password" />
+                <input type="text" id="newUserPasswordOwner" placeholder="Set a password" />
             </div>
             <div class="form-group">
                 <label>Role</label>
-                <select id="newUserRole">
+                <select id="newUserRoleOwner">
                     <option value="student">Student</option>
                     <option value="trainer">Trainer</option>
                     <option value="head_trainer">Head Trainer</option>
@@ -1834,23 +1839,66 @@
             </div>
             <div class="form-group">
                 <label>Full Name (optional)</label>
-                <input type="text" id="newUserName" placeholder="Enter full name" />
+                <input type="text" id="newUserNameOwner" placeholder="Enter full name" />
             </div>
-            <button class="btn-success btn-sm" onclick="addUser()">Add User</button>
+            <button class="btn-success btn-sm btn-block" onclick="addUserFromOwner()">Add User</button>
 
+            <div class="admin-section-title">Manage Admin Passwords</div>
+            <div id="adminPasswordsList"></div>
+            <div class="form-group">
+                <input type="text" id="newAdminPassword" placeholder="New admin password" />
+                <select id="newAdminPasswordRole">
+                    <option value="head_trainer">Head Trainer</option>
+                    <option value="trainer">Trainer</option>
+                </select>
+                <button class="btn-primary btn-sm btn-block" onclick="addAdminPassword()">Add Password</button>
+            </div>
+            <div class="admin-section-title">All Users</div>
+            <div id="userListContainerOwner"></div>
             <div class="admin-section-title">Payment Settings</div>
             <div class="form-group">
                 <label>Payment Number</label>
                 <input type="text" id="paymentNumberInput" value="01012345678" />
                 <button class="btn-primary btn-sm" onclick="savePaymentNumber()">Save Number</button>
             </div>
-
-            <div class="admin-section-title">Existing Users</div>
-            <div id="userListContainer"></div>
-
             <div class="admin-section-title">Cleanup</div>
-            <button class="btn-danger btn-sm" onclick="removeDefaultStudents()">Remove Default Students</button>
-            <button class="btn-danger btn-sm" onclick="resetAllData()">Reset All Data</button>
+            <button class="btn-danger btn-sm btn-block" onclick="removeDefaultStudents()">Remove Default Students</button>
+            <button class="btn-danger btn-sm btn-block" onclick="resetAllData()" style="margin-top:8px;">Reset All Data</button>
+        </div>
+
+        <!-- Head Trainer Controls -->
+        <div id="headTrainerControls" style="display:none;">
+            <div class="admin-section-title">Head Trainer Panel</div>
+            <div class="form-group">
+                <label>Add Trainer</label>
+                <input type="email" id="newTrainerEmail" placeholder="trainer@example.com" />
+                <input type="text" id="newTrainerPassword" placeholder="Password" style="margin-top:8px;" />
+                <input type="text" id="newTrainerName" placeholder="Full Name" style="margin-top:8px;" />
+                <button class="btn-success btn-sm btn-block" onclick="addTrainerFromHead()">Add Trainer</button>
+            </div>
+            <div class="form-group">
+                <label>Add Student</label>
+                <input type="email" id="newStudentEmail" placeholder="student@example.com" />
+                <input type="text" id="newStudentPassword" placeholder="Password" style="margin-top:8px;" />
+                <input type="text" id="newStudentName" placeholder="Full Name" style="margin-top:8px;" />
+                <button class="btn-success btn-sm btn-block" onclick="addStudentFromHead()">Add Student</button>
+            </div>
+            <div class="admin-section-title">All Users</div>
+            <div id="userListContainerHead"></div>
+        </div>
+
+        <!-- Trainer Controls -->
+        <div id="trainerControls" style="display:none;">
+            <div class="admin-section-title">Trainer Panel</div>
+            <div class="form-group">
+                <label>Add Student</label>
+                <input type="email" id="newStudentEmailTrainer" placeholder="student@example.com" />
+                <input type="text" id="newStudentPasswordTrainer" placeholder="Password" style="margin-top:8px;" />
+                <input type="text" id="newStudentNameTrainer" placeholder="Full Name" style="margin-top:8px;" />
+                <button class="btn-success btn-sm btn-block" onclick="addStudentFromTrainer()">Add Student</button>
+            </div>
+            <div class="admin-section-title">Students</div>
+            <div id="userListContainerTrainer"></div>
         </div>
     </div>
 
@@ -2012,7 +2060,9 @@
             document.getElementById('adminSheet').classList.add('show');
             document.getElementById('adminPassword').value = '';
             document.getElementById('adminPasswordSection').style.display = 'block';
-            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('ownerControls').style.display = 'none';
+            document.getElementById('headTrainerControls').style.display = 'none';
+            document.getElementById('trainerControls').style.display = 'none';
         }
         function closeAdminSheet() {
             document.getElementById('adminOverlay').classList.remove('show');
@@ -2020,27 +2070,52 @@
         }
         function verifyAdminPassword() {
             const pass = document.getElementById('adminPassword').value;
-            if (pass === 'Omar_2011') {
+            const found = data.adminPasswords.find(p => p.password === pass);
+            if (found) {
                 document.getElementById('adminPasswordSection').style.display = 'none';
-                document.getElementById('adminControls').style.display = 'block';
-                showToast('Admin access granted!', 'success');
-                renderUserList();
-                updatePaymentDisplay();
+                if (found.role === 'owner') {
+                    document.getElementById('ownerControls').style.display = 'block';
+                    renderOwnerUserList();
+                    renderAdminPasswordsList();
+                } else if (found.role === 'head_trainer') {
+                    document.getElementById('headTrainerControls').style.display = 'block';
+                    renderHeadTrainerUserList();
+                } else if (found.role === 'trainer') {
+                    document.getElementById('trainerControls').style.display = 'block';
+                    renderTrainerUserList();
+                }
+                showToast(`Access granted as ${found.role}!`, 'success');
+                document.getElementById('adminPassword').value = '';
             } else {
                 showToast('Wrong admin password!', 'error');
             }
         }
-        async function addUser() {
-            const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
-            const password = document.getElementById('newUserPassword').value.trim();
-            const role = document.getElementById('newUserRole').value;
-            const name = document.getElementById('newUserName').value.trim() || email.split('@')[0];
+
+        // Unified add user for Owner
+        async function addUserFromOwner() {
+            const email = document.getElementById('newUserEmailOwner').value.trim().toLowerCase();
+            const password = document.getElementById('newUserPasswordOwner').value.trim();
+            const role = document.getElementById('newUserRoleOwner').value;
+            const name = document.getElementById('newUserNameOwner').value.trim() || email.split('@')[0];
             if (!email || !password) return showToast('Enter email and password.', 'warning');
+            if (await addUser(email, password, role, name)) {
+                document.getElementById('newUserEmailOwner').value = '';
+                document.getElementById('newUserPasswordOwner').value = '';
+                document.getElementById('newUserNameOwner').value = '';
+                renderOwnerUserList();
+            }
+        }
+
+        // Reusable addUser function
+        async function addUser(email, password, role, name) {
+            if (!email || !password) return showToast('Enter email and password.', 'warning');
+            email = email.toLowerCase().trim();
             if (data.users.find(u => u.email.toLowerCase() === email)) return showToast('Email exists!', 'error');
-            data.users.push({ email, password, role, name, availability: null });
+            const user = { email, password, role, name: name || email.split('@')[0], availability: null };
+            data.users.push(user);
             if (role === 'student') {
                 data.students[email] = {
-                    name,
+                    name: user.name,
                     monthlyFee: 50,
                     lastPaymentDate: '—',
                     nextPaymentDate: '—',
@@ -2050,24 +2125,78 @@
                 };
             }
             await saveDataToFirestore();
-            document.getElementById('newUserEmail').value = '';
-            document.getElementById('newUserPassword').value = '';
-            document.getElementById('newUserName').value = '';
-            renderUserList();
             showToast(`${role} added!`, 'success');
+            return true;
         }
-        async function deleteUser(email) {
-            if (!confirm(`Delete ${email}?`)) return;
-            data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
-            if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
+
+        async function addTrainerFromHead() {
+            const email = document.getElementById('newTrainerEmail').value;
+            const password = document.getElementById('newTrainerPassword').value;
+            const name = document.getElementById('newTrainerName').value;
+            if (await addUser(email, password, 'trainer', name)) {
+                document.getElementById('newTrainerEmail').value = '';
+                document.getElementById('newTrainerPassword').value = '';
+                document.getElementById('newTrainerName').value = '';
+                renderHeadTrainerUserList();
+            }
+        }
+        async function addStudentFromHead() {
+            const email = document.getElementById('newStudentEmail').value;
+            const password = document.getElementById('newStudentPassword').value;
+            const name = document.getElementById('newStudentName').value;
+            if (await addUser(email, password, 'student', name)) {
+                document.getElementById('newStudentEmail').value = '';
+                document.getElementById('newStudentPassword').value = '';
+                document.getElementById('newStudentName').value = '';
+                renderHeadTrainerUserList();
+            }
+        }
+        async function addStudentFromTrainer() {
+            const email = document.getElementById('newStudentEmailTrainer').value;
+            const password = document.getElementById('newStudentPasswordTrainer').value;
+            const name = document.getElementById('newStudentNameTrainer').value;
+            if (await addUser(email, password, 'student', name)) {
+                document.getElementById('newStudentEmailTrainer').value = '';
+                document.getElementById('newStudentPasswordTrainer').value = '';
+                document.getElementById('newStudentNameTrainer').value = '';
+                renderTrainerUserList();
+            }
+        }
+
+        // Admin Passwords Management (Owner only)
+        function renderAdminPasswordsList() {
+            const container = document.getElementById('adminPasswordsList');
+            container.innerHTML = data.adminPasswords.map(p => `
+                <div class="user-list-item">
+                    <span>Password: ${p.password}</span>
+                    <span class="role-badge role-${p.role}">${p.role}</span>
+                    <button class="btn-danger btn-sm" onclick="deleteAdminPassword('${p.password}')"><i class="fas fa-trash-can"></i></button>
+                </div>
+            `).join('');
+        }
+        async function deleteAdminPassword(password) {
+            if (password === 'Omar_2011') return showToast('Cannot delete owner password!', 'error');
+            if (!confirm(`Delete admin password "${password}"?`)) return;
+            data.adminPasswords = data.adminPasswords.filter(p => p.password !== password);
             await saveDataToFirestore();
-            renderUserList();
-            if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) renderTrainerDashboard();
-            showToast('User deleted.', 'info');
+            renderAdminPasswordsList();
+            showToast('Admin password deleted.', 'info');
         }
-        function renderUserList() {
-            const container = document.getElementById('userListContainer');
-            if (!container) return;
+        async function addAdminPassword() {
+            const password = document.getElementById('newAdminPassword').value.trim();
+            const role = document.getElementById('newAdminPasswordRole').value;
+            if (!password) return showToast('Enter a password.', 'warning');
+            if (data.adminPasswords.find(p => p.password === password)) return showToast('Password exists!', 'error');
+            data.adminPasswords.push({ password, role });
+            await saveDataToFirestore();
+            document.getElementById('newAdminPassword').value = '';
+            renderAdminPasswordsList();
+            showToast('Admin password added!', 'success');
+        }
+
+        // User Lists
+        function renderOwnerUserList() {
+            const container = document.getElementById('userListContainerOwner');
             container.innerHTML = data.users.map(u => `
                 <div class="user-list-item">
                     <span class="email">${u.email}</span>
@@ -2076,6 +2205,39 @@
                 </div>
             `).join('');
         }
+        function renderHeadTrainerUserList() {
+            const container = document.getElementById('userListContainerHead');
+            container.innerHTML = data.users.map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge role-${u.role}">${u.role}</span>
+                    <button class="btn-danger btn-sm" onclick="deleteUser('${u.email}')"><i class="fas fa-trash-can"></i></button>
+                </div>
+            `).join('');
+        }
+        function renderTrainerUserList() {
+            const container = document.getElementById('userListContainerTrainer');
+            container.innerHTML = data.users.filter(u => u.role === 'student').map(u => `
+                <div class="user-list-item">
+                    <span class="email">${u.email}</span>
+                    <span class="role-badge role-student">student</span>
+                    <button class="btn-danger btn-sm" onclick="deleteUser('${u.email}')"><i class="fas fa-trash-can"></i></button>
+                </div>
+            `).join('');
+        }
+
+        async function deleteUser(email) {
+            if (!confirm(`Delete ${email}?`)) return;
+            data.users = data.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+            if (data.students[email.toLowerCase()]) delete data.students[email.toLowerCase()];
+            await saveDataToFirestore();
+            if (document.getElementById('ownerControls').style.display === 'block') renderOwnerUserList();
+            if (document.getElementById('headTrainerControls').style.display === 'block') renderHeadTrainerUserList();
+            if (document.getElementById('trainerControls').style.display === 'block') renderTrainerUserList();
+            if (currentUser && (currentUser.role === 'trainer' || currentUser.role === 'head_trainer')) renderTrainerDashboard();
+            showToast('User deleted.', 'info');
+        }
+
         async function removeDefaultStudents() {
             const defaultEmails = ['student@gym.com', 'sara@gym.com', 'ahmed@gym.com'];
             let removed = 0;
@@ -2086,7 +2248,7 @@
                     removed++;
                 }
             }
-            if (removed > 0) { await saveDataToFirestore(); renderUserList(); showToast(`Removed ${removed} default students.`, 'success'); }
+            if (removed > 0) { await saveDataToFirestore(); renderOwnerUserList(); showToast(`Removed ${removed} default students.`, 'success'); }
             else showToast('No default students found.', 'info');
         }
         async function resetAllData() {
